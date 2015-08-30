@@ -92,9 +92,9 @@ class HostedImage < ActiveRecord::Base
     create_database = CreateFile.connection.current_database
     query = <<-END_SQL.gsub(/\s+/, " ").strip
     INSERT INTO #{self.connection.current_database}.#{self.table_name} (source_id, source, filename, path, description, copyright, created_at, updated_at)
-    SELECT fid, 'create', filename, uri, field_media_description_value, field_copyright_value
+    SELECT fid, 'create', filename, uri, field_media_description_value, field_copyright_value, 'NOW()', 'NOW()'
     FROM (
-      SELECT fid, filename, uri, field_media_description_value, field_copyright_value, NOW(), NOW()
+      SELECT fid, filename, uri, field_media_description_value, field_copyright_value
       FROM (
             #{create_database}.file_managed
             LEFT JOIN #{create_database}.field_data_field_media_description
