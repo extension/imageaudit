@@ -1,0 +1,77 @@
+<h1><%= @community.name -%> Content Summary</h1>
+<table class="table">
+    <tr>
+  		<td>Total Pages</td>
+    	<td class="mednumber"><%= link_to(number_with_delimiter(@summary_data['total_pages']), pages_path(:community_id => @community.id)) -%></td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>Eligible Pages</td>
+      <td class="mednumber"><%= link_to(number_with_delimiter(@summary_data['eligible_pages']), pages_path(:community_id => @community.id, :eligible => 'true')) -%></td>
+      <td><em>Pages published for at least 1 week prior to <%= PageStat::END_DATE -%></em></td>
+    </tr>
+    <tr>
+      <td>Viewed Pages</td>
+      <td style="white-space:nowrap;">
+        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['viewed_pages']), pages_path(:viewed => 'true')) -%></span>
+        <span class="mednumber">(<%= percentage_display(@summary_data['viewed_pages'],@summary_data['eligible_pages']) -%>)</span>
+      </td>
+      <td><em>Pages with <strong>at least one or more</strong> mean unique pageviews per week<br/>between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%></em></td>
+    </tr>
+    <tr>
+      <td>Unviewed Pages</td>
+      <td style="white-space:nowrap;">
+        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['eligible_pages'] - @summary_data['viewed_pages']) ), pages_path(:unviewed => 'true')) -%></span>
+        <span class="mednumber">(<%= percentage_display((@summary_data['eligible_pages'] - @summary_data['viewed_pages']),@summary_data['eligible_pages']) -%>)</span>
+      </td>
+      <td>
+        <em>Pages with <strong>less than one</strong> mean unique pageview per week<br/>
+        between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%></em>
+      </td>
+    </tr>
+    <tr>
+      <td>Viewed Page Percentiles</td>
+      <td>
+        <table class="table">
+        <%- PageStat::PERCENTILES.each_with_index do |percentile, index| -%>
+          <tr>
+          <td class='mednumber'>
+            <%= "#{percentile}th"  -%>
+          </td>
+          <td class='mednumber'>
+            <%= number_with_precision(@summary_data['viewed_percentiles'][index], precision: 1) -%>
+          <td>
+          </tr>
+        <%- end -%>
+        </table>
+      </td>
+      <td><em>Percentiles (NIST standard) of mean unique pageviews per week<br/>between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%></em></td>
+    </tr>
+    <tr>
+      <td>Image Links</td>
+      <td>
+        <span class="mednumber"><%= number_with_delimiter(@summary_data['image_links']) -%></span>
+      </td>
+      <td>
+        <em>Links (good or bad) to any kind of image, including various sizes or styles of hosted images</em>
+      </td>
+    </tr>
+    <tr>
+      <td>Hosted Images</td>
+      <td>
+        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['hosted_images']), images_path(:community_id => @community.id)) -%></span><br/>
+      </td>
+      <td>
+        <em>Images uploaded to either the legacy cop.extension.org cms or the create.extension.org cms</em>
+      </td>
+    </tr>
+    <tr>
+      <td>Viewed (Hosted) Images</td>
+      <td>
+        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['viewed_hosted_images']), images_path(:community_id => @community.id,:viewed => 'true')) -%></span><br/>
+      </td>
+      <td>
+        <em>Images uploaded to either the legacy cop.extension.org cms or the create.extension.org cms that are linked to within <strong>viewed</strong> pages</em>
+      </td>
+    </tr>
+</table>

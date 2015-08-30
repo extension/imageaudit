@@ -1,0 +1,6 @@
+create_site: 'create.extension.org'
+articles_site: 'www.extension.org'
+honeybadger_api_key: 'use_local_settings'
+session_token: '123456789012345678901234567890'
+# mysql group concat size for percentiles
+group_concat_max_len: 1048576

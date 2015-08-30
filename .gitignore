@@ -1,0 +1,30 @@
+# Ignore bundler config
+/.bundle
+
+# environment files
+/.rvmrc
+
+# Ignore all logfiles and tempfiles.
+/log/*.log
+/log/*.pid
+/tmp
+
+# public dir
+/public/system
+/public/sitemaps
+/public/mediawiki
+
+# configuration
+/config/database.yml
+/config/settings.local.yml
+
+# capatross
+/config/capatross.local.yml
+/capatross_logs
+
+# legacy yarddocs
+/.yardoc
+/doc/*
+
+# testing
+/imagetest
