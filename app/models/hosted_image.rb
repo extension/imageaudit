@@ -91,10 +91,10 @@ class HostedImage < ActiveRecord::Base
     # DOES NOT UPDATE COPYRIGHT - that is in a separate procedure
     create_database = CreateFile.connection.current_database
     query = <<-END_SQL.gsub(/\s+/, " ").strip
-    INSERT INTO #{self.connection.current_database}.#{self.table_name} (source_id, source, filename, path, description, copyright)
+    INSERT INTO #{self.connection.current_database}.#{self.table_name} (source_id, source, filename, path, description, copyright, created_at, updated_at)
     SELECT fid, 'create', filename, uri, field_media_description_value, field_copyright_value
     FROM (
-      SELECT fid, filename, uri, field_media_description_value, field_copyright_value
+      SELECT fid, filename, uri, field_media_description_value, field_copyright_value, NOW(), NOW()
       FROM (
             #{create_database}.file_managed
             LEFT JOIN #{create_database}.field_data_field_media_description
@@ -109,7 +109,8 @@ class HostedImage < ActiveRecord::Base
     ON DUPLICATE KEY UPDATE
     filename = create_image_data.filename,
     path = create_image_data.uri,
-    description = create_image_data.field_media_description_value
+    description = create_image_data.field_media_description_value,
+    updated_at = NOW()
     END_SQL
 
     CreateFile.connection.execute(query)
