@@ -19,7 +19,7 @@ class InitialSchema < ActiveRecord::Migration
       t.boolean "original_wiki"
       t.string  "original_filename"
       t.text    "original_path"
-      t.integer "original_source_id"    
+      t.integer "original_source_id"
       t.timestamps
     end
 
@@ -38,7 +38,7 @@ class InitialSchema < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index "community_page_stats", ["publishing_community_id"], :name => "community_ndx", :unique => true
+    add_index "community_page_stats", ["group_id"], :name => "community_ndx", :unique => true
 
     create_table "year_analytics", :force => true do |t|
       t.integer  "page_id"

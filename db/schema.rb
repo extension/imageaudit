@@ -26,19 +26,20 @@ ActiveRecord::Schema.define(:version => 20150829215120) do
   add_index "audit_logs", ["auditable_type", "auditable_id", "contributor_id"], :name => "audit_ndx", :unique => true
 
   create_table "community_page_stats", :force => true do |t|
-    t.integer  "publishing_community_id"
-    t.integer  "pages"
+    t.integer  "group_id"
+    t.integer  "total_pages"
+    t.integer  "eligible_pages"
     t.integer  "viewed_pages"
     t.text     "viewed_percentiles"
     t.integer  "image_links"
     t.integer  "viewed_image_links"
     t.integer  "hosted_images"
     t.integer  "viewed_hosted_images"
-    t.datetime "created_at",              :null => false
-    t.datetime "updated_at",              :null => false
+    t.datetime "created_at",           :null => false
+    t.datetime "updated_at",           :null => false
   end
 
-  add_index "community_page_stats", ["publishing_community_id"], :name => "community_ndx", :unique => true
+  add_index "community_page_stats", ["group_id"], :name => "community_ndx", :unique => true
 
   create_table "contributor_groups", :force => true do |t|
     t.integer  "contributor_id"
@@ -84,8 +85,8 @@ ActiveRecord::Schema.define(:version => 20150829215120) do
     t.integer "hosted_image_id",                          :null => false
     t.boolean "is_stock",              :default => false, :null => false
     t.integer "is_stock_by"
-    t.boolean "stock_review",          :default => false, :null => false
-    t.integer "stock_review_by"
+    t.boolean "stock_reviewed",        :default => false, :null => false
+    t.integer "stock_reviewed_by"
     t.boolean "community_reviewed",    :default => false, :null => false
     t.integer "community_reviewed_by"
     t.boolean "staff_reviewed",        :default => false, :null => false
