@@ -45,12 +45,6 @@ namespace :deploy do
     ln -nfs #{shared_path}/config/database.yml #{release_path}/config/database.yml &&
     ln -nfs #{shared_path}/config/robots.txt #{release_path}/public/robots.txt &&
     ln -nfs #{shared_path}/config/settings.local.yml #{release_path}/config/settings.local.yml &&
-    rm -rf #{release_path}/tmp/attachment_fu &&
-    ln -nfs #{shared_path}/uploads #{release_path}/tmp/attachment_fu &&
-    ln -nfs #{shared_path}/wikifiles #{release_path}/public/mediawiki/files &&
-    ln -nfs #{shared_path}/drupalfiles #{release_path}/public/sites/default/files &&
-    ln -nfs #{shared_path}/data #{release_path}/data &&
-    ln -nfs #{shared_path}/sitemaps #{release_path}/public/sitemaps &&
     ln -nfs #{shared_path}/tmpcache    #{release_path}/tmp/cache &&
     ln -nfs #{shared_path}/tmpauth #{release_path}/tmp/auth
     CMD
