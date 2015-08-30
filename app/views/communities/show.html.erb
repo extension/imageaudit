@@ -13,7 +13,7 @@
     <tr>
       <td>Viewed Pages</td>
       <td style="white-space:nowrap;">
-        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['viewed_pages']), pages_path(:viewed => 'true')) -%></span>
+        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['viewed_pages']), pages_path(:community_id => @community.id, :viewed => 'true')) -%></span>
         <span class="mednumber">(<%= percentage_display(@summary_data['viewed_pages'],@summary_data['eligible_pages']) -%>)</span>
       </td>
       <td><em>Pages with <strong>at least one or more</strong> mean unique pageviews per week<br/>between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%></em></td>
@@ -21,7 +21,7 @@
     <tr>
       <td>Unviewed Pages</td>
       <td style="white-space:nowrap;">
-        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['eligible_pages'] - @summary_data['viewed_pages']) ), pages_path(:unviewed => 'true')) -%></span>
+        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['eligible_pages'] - @summary_data['viewed_pages']) ), pages_path(:community_id => @community.id, :unviewed => 'true')) -%></span>
         <span class="mednumber">(<%= percentage_display((@summary_data['eligible_pages'] - @summary_data['viewed_pages']),@summary_data['eligible_pages']) -%>)</span>
       </td>
       <td>
