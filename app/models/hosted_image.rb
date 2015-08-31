@@ -139,7 +139,6 @@ class HostedImage < ActiveRecord::Base
     HostedImage.where(source: 'create').all.each do |hi|
       if(create_copyright = create_file_copyrights[hi.source_id])
         if hi.copyright != create_copyright
-          puts "copyright mismatch! #{hi.id}"
           previous_copyright = hi.copyright
           hi.update_attribute(:copyright, create_copyright)
           # clear validation if exists
