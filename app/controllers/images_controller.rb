@@ -43,7 +43,7 @@ class ImagesController < ApplicationController
       @filtered = true
       image_scope = image_scope.with_copyright
     end
-    @images = image_scope.page(params[:page]).per(10)
+    @images = image_scope.order("hosted_images.id desc").page(params[:page]).per(10)
   end
 
   def show
