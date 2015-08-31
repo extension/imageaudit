@@ -1,0 +1,7 @@
+<div class='page_audit_notes'>
+<%- if(page_audit.notes.present?) -%>
+  <%= page_audit.notes.html_safe %>
+<%- else -%>
+    <p><em>No notes provided</em></p>
+<%- end -%>
+</div>

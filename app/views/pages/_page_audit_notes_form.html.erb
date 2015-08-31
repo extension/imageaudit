@@ -1,0 +1,18 @@
+<%= form_for(page_audit, :url => set_notes_page_path(id: page.id), remote: true, html: {id: "notes_form_for_page_#{page.id}"}) do |f| %>
+
+  <div class="form-group">
+    <fieldset>
+      <%= f.text_area :notes, "rows" => 5, class: 'col-md-8', id: "page_notes_field_#{page.id}" %>
+    </fieldset>
+  </div>
+
+  <p>
+    <%= f.submit "Save Changes", :class => "btn btn-primary" -%>
+    <%= f.submit('cancel', :class => 'btn btn-link') -%>
+  </p>
+
+<%- end -%>
+
+<script class="code" type="text/javascript">
+  $('#page_notes_field_<%= page.id %>').wysihtml5({toolbar: { "fa": true, "image": false}});
+</script>

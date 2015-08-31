@@ -53,6 +53,37 @@ class ImagesController < ApplicationController
     end
   end
 
+  def change_communityreview
+    @image = HostedImage.find(params[:id])
+    @image_audit = @image.hosted_image_audit
+    if(!params[:community_reviewed].nil?)
+      previous_value = @image_audit.community_reviewed?
+      community_reviewed = TRUE_VALUES.include?(params[:community_reviewed])
+      @image_audit.update_attributes({community_reviewed: community_reviewed, community_reviewed_by: @currentcontributor.id})
+      AuditLog.create(contributor: @currentcontributor,
+                      auditable: @image_audit,
+                      changed_item: 'community_reviewed',
+                      previous_check_value: previous_value,
+                      current_check_value: @image_audit.community_reviewed?)
+    end
+  end
+
+  def change_staffreview
+    @image = HostedImage.find(params[:id])
+    @image_audit = @image.hosted_image_audit
+    if(!params[:staff_reviewed].nil?)
+      previous_value = @image_audit.staff_reviewed?
+      staff_reviewed = TRUE_VALUES.include?(params[:staff_reviewed])
+      @image_audit.update_attributes({staff_reviewed: staff_reviewed, staff_reviewed_by: @currentcontributor.id})
+      AuditLog.create(contributor: @currentcontributor,
+                      auditable: @image_audit,
+                      changed_item: 'staff_reviewed',
+                      previous_check_value: previous_value,
+                      current_check_value: @image_audit.staff_reviewed?)
+    end
+  end
+
+
   def change_stock
     @image = HostedImage.find(params[:id])
     @image_audit = @image.hosted_image_audit

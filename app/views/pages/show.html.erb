@@ -1,5 +1,7 @@
 <h1>Page Details for Page ID# <%= @page.id -%></h1>
 <p><%= @page.title %></p>
+<div class="row">
+  <div class="col-md-6">
 <table class="table">
     <tr>
   		<td>Weeks Published</td>
@@ -40,6 +42,41 @@
       <td>&nbsp;</td>
     </tr>
 </table>
+</div>
+
+<div class="col-md-6 text-center">
+  <div id="keeppage">
+    <%= render(partial: 'keep_page') -%>
+  </div>
+</div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-info">
+      <div class="panel-heading"
+      <h3 class="panel-title">Page Notes</h3>
+      </div>
+      <div class="panel-body">
+        <div id='notes_for_page_<%= @page.id %>'>
+          <%= render(partial: 'page_audit_notes', locals: {page: @page, page_audit: @page_audit}) %>
+        </div>
+        <%- if @currentcontributor -%>
+          <p id="edit_notes_link_for_page_<%= @page.id %>"><small><%= link_to('edit','#',id: "edit_notes_for_page_#{@page.id}") %></small></p>
+        <%- end -%>
+
+        <script class="code" type="text/javascript">
+          $('#edit_notes_for_page_<%= @page.id %>').click(function() {
+            $('#edit_notes_link_for_page_<%= @page.id %>').hide();
+            $('#notes_for_page_<%= @page.id %>').html('<%= escape_javascript(render(partial: "page_audit_notes_form", locals: {page: @page, page_audit: @page_audit})) %>');
+         });
+        </script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <%- if @stats.hosted_images > 0 -%>
 <h2>Hosted Images</h2>
 <table class="table table-striped">

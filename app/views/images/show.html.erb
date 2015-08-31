@@ -21,9 +21,15 @@
     </table>
   </div>
   <div class="col-md-6 text-center">
-      <div id="stockbutton">
-        <%= render(partial: 'stock_button') -%>
-      </div>
+    <div id="stockbutton">
+      <%= render(partial: 'stock_button') -%>
+    </div>
+    <div id="communityreview">
+      <%= render(partial: 'community_review') -%>
+    </div>
+    <div id="staffreview">
+      <%= render(partial: 'staff_review') -%>
+    </div>
   </div>
 </div>
 
@@ -35,7 +41,7 @@
       </div>
       <div class="panel-body">
         <div id='notes_for_image_<%= @image.id %>'>
-          <%= render(partial: 'shared/image_audit_notes', locals: {image: @image, image_audit: @image_audit}) %>
+          <%= render(partial: 'image_audit_notes', locals: {image: @image, image_audit: @image_audit}) %>
         </div>
         <%- if @currentcontributor -%>
           <p id="edit_notes_link_for_image_<%= @image.id %>"><small><%= link_to('edit','#',id: "edit_notes_for_image_#{@image.id}") %></small></p>
@@ -44,7 +50,7 @@
         <script class="code" type="text/javascript">
           $('#edit_notes_for_image_<%= @image.id %>').click(function() {
             $('#edit_notes_link_for_image_<%= @image.id %>').hide();
-            $('#notes_for_image_<%= @image.id %>').html('<%= escape_javascript(render(partial: "shared/image_audit_notes_form", locals: {image: @image, image_audit: @image_audit})) %>');
+            $('#notes_for_image_<%= @image.id %>').html('<%= escape_javascript(render(partial: "image_audit_notes_form", locals: {image: @image, image_audit: @image_audit})) %>');
          });
         </script>
       </div>

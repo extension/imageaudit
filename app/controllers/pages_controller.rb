@@ -14,6 +14,9 @@ class PagesController < ApplicationController
       return do_404
     end
     @stats = @page.page_stat
+    if(!@page_audit = @page.page_audit)
+      @page_audit = @page.create_page_audit
+    end
   end
 
   def index
@@ -60,5 +63,40 @@ class PagesController < ApplicationController
     @pages = page_scope.page(params[:page]).per(25)
   end
 
+
+  def change_keep_page
+    @page = Page.find(params[:id])
+    @page_audit = @page.page_audit
+    if(!params[:keep_published].nil?)
+      previous_value = @page_audit.keep_published?
+      is_stock = TRUE_VALUES.include?(params[:keep_published])
+      @page_audit.update_attributes({keep_published: keep_published, keep_published_by: @currentcontributor.id})
+      AuditLog.create(contributor: @currentcontributor,
+                      auditable: @page_audit,
+                      changed_item: 'keep_published',
+                      previous_check_value: previous_value,
+                      current_check_value: @page_audit.keep_published?)
+    end
+  end
+
+  def set_notes
+    @page = Page.find(params[:id])
+    if(!@page_audit = @page.page_audit)
+      @page_audit = @page.create_page_audit
+    end
+
+    if(params[:commit] == 'Save Changes')
+      previous_notes = @page_audit.notes
+      @page_audit.update_attribute(:notes,params[:page_audit][:notes])
+      AuditLog.create(contributor: @currentcontributor,
+                      auditable: @page_audit,
+                      changed_item: 'notes',
+                      previous_notes: previous_notes,
+                      current_notes: @page_audit.notes)
+    end
+    respond_to do |format|
+      format.js
+    end
+  end
 
 end

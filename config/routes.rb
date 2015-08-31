@@ -1,10 +1,20 @@
 Imageaudit::Application.routes.draw do
   root :to => 'home#index'
-  resources :pages, :only => [:index, :show]
+  resources :pages, :only => [:index, :show] do
+    member do
+      post :change_keep_page
+      post :set_notes
+      put :set_notes
+    end
+  end
+  
   resources :communities, :only => [:index, :show]
+
   resources :images, :only => [:index, :show] do
     member do
       post :change_stock
+      post :change_communityreview
+      post :change_staffreview
       post :set_notes
       put :set_notes
     end

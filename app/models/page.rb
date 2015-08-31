@@ -15,6 +15,7 @@ class Page < ActiveRecord::Base
   has_many :linkings, dependent: :destroy
   has_many :links, :through => :linkings
   has_many :hosted_images, :through => :links
+  has_one  :page_audit
 
 
   # index settings
