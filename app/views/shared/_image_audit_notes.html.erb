@@ -1,0 +1,7 @@
+<div class='image_audit_notes'>
+<%- if(image_audit.notes.present?) -%>
+  <%= image_audit.notes.html_safe %>
+<%- else -%>
+    <p><em>No notes provided</em></p>
+<%- end -%>
+</div>

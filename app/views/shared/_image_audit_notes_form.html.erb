@@ -1,0 +1,18 @@
+<%= form_for(image_audit, :url => set_notes_image_path(id: image.id), remote: true, html: {id: "notes_form_for_image_#{image.id}"}) do |f| %>
+
+  <div class="form-group">
+    <fieldset>
+      <%= f.text_area :notes, "rows" => 5, class: 'col-md-8', id: "image_notes_field_#{image.id}" %>
+    </fieldset>
+  </div>
+
+  <p>
+    <%= f.submit "Save Changes", :class => "btn btn-primary" -%>
+    <%= f.submit('cancel', :class => 'btn btn-link') -%>
+  </p>
+
+<%- end -%>
+
+<script class="code" type="text/javascript">
+  $('#image_notes_field_<%= image.id %>').wysihtml5({toolbar: { "fa": true, "image": false}});
+</script>

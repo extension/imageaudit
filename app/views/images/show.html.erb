@@ -20,11 +20,40 @@
         </tr>
     </table>
   </div>
-  <div class="col-md-6">
-
+  <div class="col-md-6 text-center">
+      <div id="stockbutton">
+        <%= render(partial: 'stock_button') -%>
+      </div>
   </div>
-
 </div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-info">
+      <div class="panel-heading"
+      <h3 class="panel-title">Image Notes</h3>
+      </div>
+      <div class="panel-body">
+        <div id='notes_for_image_<%= @image.id %>'>
+          <%= render(partial: 'shared/image_audit_notes', locals: {image: @image, image_audit: @image_audit}) %>
+        </div>
+        <%- if @currentcontributor -%>
+          <p id="edit_notes_link_for_image_<%= @image.id %>"><small><%= link_to('edit','#',id: "edit_notes_for_image_#{@image.id}") %></small></p>
+        <%- end -%>
+
+        <script class="code" type="text/javascript">
+          $('#edit_notes_for_image_<%= @image.id %>').click(function() {
+            $('#edit_notes_link_for_image_<%= @image.id %>').hide();
+            $('#notes_for_image_<%= @image.id %>').html('<%= escape_javascript(render(partial: "shared/image_audit_notes_form", locals: {image: @image, image_audit: @image_audit})) %>');
+         });
+        </script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 
 <%- if @image.pages.count > 0 -%>
 <h2>Pages</h2>

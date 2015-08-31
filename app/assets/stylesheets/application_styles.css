@@ -36,3 +36,13 @@ img.imageaudit {
 .sortable th .desc {
   background-image: url(/assets/sort_arrow_down.png);
 }
+
+
+.dashmodule {
+  border: 2px solid #ddd;
+  margin-bottom:2.5em;
+  padding:1.5em;
+  -webkit-border-radius: 8px;
+     -moz-border-radius: 8px;
+          border-radius: 8px;
+}

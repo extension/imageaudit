@@ -48,6 +48,44 @@ class ImagesController < ApplicationController
 
   def show
     @image = HostedImage.find(params[:id])
+    if(!@image_audit = @image.hosted_image_audit)
+      @image_audit = @image.create_hosted_image_audit
+    end
+  end
+
+  def change_stock
+    @image = HostedImage.find(params[:id])
+    @image_audit = @image.hosted_image_audit
+    if(!params[:is_stock].nil?)
+      previous_value = @image_audit.is_stock
+      is_stock = TRUE_VALUES.include?(params[:is_stock])
+      @image_audit.update_attributes({is_stock: is_stock, is_stock_by: @currentcontributor.id})
+      AuditLog.create(contributor: @currentcontributor,
+                      auditable: @image_audit,
+                      changed_item: 'is_stock',
+                      previous_check_value: previous_value,
+                      current_check_value: @image_audit.is_stock)
+    end
+  end
+
+  def set_notes
+    @image = HostedImage.find(params[:id])
+    if(!@image_audit = @image.hosted_image_audit)
+      @image_audit = @image.create_hosted_image_audit
+    end
+
+    if(params[:commit] == 'Save Changes')
+      previous_notes = @image_audit.notes
+      @image_audit.update_attribute(:notes,params[:hosted_image_audit][:notes])
+      AuditLog.create(contributor: @currentcontributor,
+                      auditable: @image_audit,
+                      changed_item: 'notes',
+                      previous_notes: previous_notes,
+                      current_notes: @image_audit.notes)
+    end
+    respond_to do |format|
+      format.js
+    end
   end
 
 end

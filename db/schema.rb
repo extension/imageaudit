@@ -11,19 +11,21 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150829215120) do
+ActiveRecord::Schema.define(:version => 20150831140512) do
 
   create_table "audit_logs", :force => true do |t|
-    t.string  "auditable_type",       :null => false
-    t.integer "auditable_id",         :null => false
-    t.integer "contributor_id",       :null => false
-    t.string  "changed_item",         :null => false
-    t.boolean "previous_check_Value"
-    t.text    "previous_notes"
-    t.text    "current_notes"
+    t.string   "auditable_type",       :null => false
+    t.integer  "auditable_id",         :null => false
+    t.integer  "contributor_id",       :null => false
+    t.string   "changed_item",         :null => false
+    t.boolean  "previous_check_value"
+    t.boolean  "current_check_value"
+    t.text     "previous_notes"
+    t.text     "current_notes"
+    t.datetime "created_at"
   end
 
-  add_index "audit_logs", ["auditable_type", "auditable_id", "contributor_id"], :name => "audit_ndx", :unique => true
+  add_index "audit_logs", ["auditable_type", "auditable_id", "contributor_id"], :name => "audit_ndx"
 
   create_table "community_page_stats", :force => true do |t|
     t.integer  "group_id"
@@ -82,16 +84,16 @@ ActiveRecord::Schema.define(:version => 20150829215120) do
   add_index "groups", ["create_gid"], :name => "create_group_ndx"
 
   create_table "hosted_image_audits", :force => true do |t|
-    t.integer "hosted_image_id",                          :null => false
-    t.boolean "is_stock",              :default => false, :null => false
-    t.integer "is_stock_by"
-    t.boolean "stock_reviewed",        :default => false, :null => false
-    t.integer "stock_reviewed_by"
-    t.boolean "community_reviewed",    :default => false, :null => false
-    t.integer "community_reviewed_by"
-    t.boolean "staff_reviewed",        :default => false, :null => false
-    t.integer "staff_reviewed_by"
-    t.text    "notes"
+    t.integer  "hosted_image_id",       :null => false
+    t.boolean  "is_stock"
+    t.integer  "is_stock_by"
+    t.boolean  "community_reviewed"
+    t.integer  "community_reviewed_by"
+    t.boolean  "staff_reviewed"
+    t.integer  "staff_reviewed_by"
+    t.text     "notes"
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
   end
 
   add_index "hosted_image_audits", ["hosted_image_id"], :name => "image_ndx", :unique => true
@@ -158,14 +160,16 @@ ActiveRecord::Schema.define(:version => 20150829215120) do
   add_index "links", ["page_id", "status", "linktype"], :name => "coreindex"
 
   create_table "page_audits", :force => true do |t|
-    t.integer "page_id",                                  :null => false
-    t.boolean "keep_published",        :default => true,  :null => false
-    t.integer "keep_published_by"
-    t.boolean "community_reviewed",    :default => false, :null => false
-    t.integer "community_reviewed_by"
-    t.boolean "staff_reviewed",        :default => false, :null => false
-    t.integer "staff_reviewed_by"
-    t.text    "notes"
+    t.integer  "page_id",                                 :null => false
+    t.boolean  "keep_published",        :default => true, :null => false
+    t.integer  "keep_published_by"
+    t.boolean  "community_reviewed"
+    t.integer  "community_reviewed_by"
+    t.boolean  "staff_reviewed"
+    t.integer  "staff_reviewed_by"
+    t.text     "notes"
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
   end
 
   add_index "page_audits", ["page_id"], :name => "page_ndx", :unique => true

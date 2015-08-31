@@ -11,6 +11,7 @@ class HostedImage < ActiveRecord::Base
   has_many :linkings, :through => :links
   has_many :pages, :through => :linkings
   has_many :page_stats, :through => :pages
+  has_one  :hosted_image_audit
 
   scope :from_copwiki, -> {where(source: 'copwiki')}
   scope :from_create, -> {where(source: 'create')}
@@ -49,6 +50,14 @@ class HostedImage < ActiveRecord::Base
     joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
   end
 
+  def self.viewed_stock
+    joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 1').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
+  end
+
+  def self.viewed_unreviewed_stock
+    joins(:hosted_image_audit).where('hosted_image_audits.is_stock IS NULL').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
+  end
+
   def filesys_path
     if(self.source == 'copwiki')
       "#{Rails.root}/public/mediawiki/files#{self.path}"
@@ -85,6 +94,14 @@ class HostedImage < ActiveRecord::Base
 
   def self.viewed_count
     joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct hosted_images.id")
+  end
+
+  def self.viewed_stock_count
+    joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 1').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct hosted_images.id")
+  end
+
+  def self.viewed_unreviewed_stock_count
+    joins(:hosted_image_audit).where('hosted_image_audits.is_stock IS NULL').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct hosted_images.id")
   end
 
   def self.update_from_create

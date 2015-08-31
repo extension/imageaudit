@@ -15,6 +15,7 @@ class HomeController < ApplicationController
       return render :template => 'home/rebuild_in_progress'
     else
       @summary_data = PageStat.overall_stat_attributes
+      #@summary_data['viewed_stock_images'] = HostedImage.viewed_stock_count
     end
   end
 end
