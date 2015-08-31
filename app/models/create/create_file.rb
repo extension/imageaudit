@@ -8,8 +8,8 @@
 class CreateFile < ActiveRecord::Base
   # connects to the create database
   self.establish_connection :create
-  self.set_table_name 'file_managed'
-  self.set_primary_key "fid"
+  self.table_name = 'file_managed'
+  self.primary_key = "fid"
   self.inheritance_column = "inheritance_type"
 
 
