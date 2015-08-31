@@ -2,12 +2,12 @@ Imageaudit::Application.routes.draw do
   root :to => 'home#index'
   resources :pages, :only => [:index, :show] do
     member do
-      post :change_keep_page
+      post :change_keeppublished
       post :set_notes
       put :set_notes
     end
   end
-  
+
   resources :communities, :only => [:index, :show]
 
   resources :images, :only => [:index, :show] do

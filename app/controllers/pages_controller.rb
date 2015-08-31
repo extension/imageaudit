@@ -64,7 +64,7 @@ class PagesController < ApplicationController
   end
 
 
-  def change_keep_page
+  def change_keeppublished
     @page = Page.find(params[:id])
     @page_audit = @page.page_audit
     if(!params[:keep_published].nil?)
