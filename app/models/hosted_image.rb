@@ -134,7 +134,47 @@ class HostedImage < ActiveRecord::Base
   end
 
   def self.update_copyrights
-    # TODO
+    create_file_copyrights = {}
+    CreateFile.joins(:copyright).select(['fid','field_data_field_copyright.field_copyright_value as copyright_text']).map{|cf| create_file_copyrights[cf.fid] = cf.copyright_text}
+    HostedImage.where(source: 'create').all.each do |hi|
+      if(create_copyright = create_file_copyrights[hi.source_id])
+        if hi.copyright != create_copyright
+          puts "copyright mismatch! #{hi.id}"
+          previous_copyright = hi.copyright
+          hi.update_attribute(:copyright, create_copyright)
+          # clear validation if exists
+          if(!image_audit = hi.hosted_image_audit)
+            image_audit = hi.create_hosted_image_audit
+          else
+            # log copyright change
+            AuditLog.create(contributor_id: 1,
+                            auditable: hi,
+                            changed_item: 'copyright',
+                            previous_notes: previous_copyright,
+                            current_notes: create_copyright)
+
+            if(!image_audit.community_reviewed.nil? and image_audit.community_reviewed?)
+              image_audit.update_attributes({:community_reviewed => false, :community_reviewed_by => 1})
+              AuditLog.create(contributor_id: 1,
+                              auditable: image_audit,
+                              changed_item: 'community_reviewed',
+                              previous_check_value: true,
+                              current_check_value: false)
+            end
+
+            if(!image_audit.staff_reviewed.nil? and image_audit.staff_reviewed?)
+              image_audit.update_attributes({:staff_reviewed => false, :staff_reviewed_by => 1})
+              AuditLog.create(contributor_id: 1,
+                              auditable: image_audit,
+                              changed_item: 'staff_reviewed',
+                              previous_check_value: true,
+                              current_check_value: false)
+            end
+          end
+        end
+      end
+    end
+    true
   end
 
 
@@ -163,7 +203,6 @@ class HostedImage < ActiveRecord::Base
         # nothing for now
     end
   end
-
 
 
 end

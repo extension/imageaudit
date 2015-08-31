@@ -11,7 +11,7 @@ class Rebuild < ActiveRecord::Base
   ARTICLE_REBUILDS = ['Page','Tag','PageTagging']
   ARTICLE_UPDATES = [{'Link' => 'update_list'},{'Linking' => 'update_list'}]
   PEOPLE_REBUILDS = ['Group','Contributor','ContributorGroup']
-  IMAGE_UPDATES = [{'HostedImage' => 'update_from_create'},{'HostedImageLink' => 'update_list'}]
+  IMAGE_UPDATES = [{'HostedImage' => 'update_from_create'},{'HostedImage' => 'update_copyrights'},{'HostedImageLink' => 'update_list'}]
   INTERNAL_REBUILDS = ['PageStat','CommunityPageStat']
 
   def run_and_log(model,action)

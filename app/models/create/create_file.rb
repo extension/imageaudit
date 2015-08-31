@@ -1,5 +1,5 @@
 # === COPYRIGHT:
-# Copyright (c) 2005-2015 North Carolina State University
+# Copyright (c) North Carolina State University
 # Developed with funding from the eXtension Foundation
 # === LICENSE:
 #
@@ -12,6 +12,7 @@ class CreateFile < ActiveRecord::Base
   self.primary_key = "fid"
   self.inheritance_column = "inheritance_type"
 
+  has_one :copyright, :class_name => 'CreateFileCopyright', :foreign_key => :entity_id
 
 
   def self.create_or_update_from_hosted_image(hosted_image)
