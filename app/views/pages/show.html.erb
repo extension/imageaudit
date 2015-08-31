@@ -13,7 +13,7 @@
     <tr>
       <td>Mean Unique Pageviews<br/>
       <em>between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%></em></td>
-      <td class="mednumber"><%= number_with_precision(@stats.mean_unique_pageviews,precision: 1) -%></td>
+      <td class="mednumber"><%= number_with_precision(@stats.mean_unique_pageviews,precision: 2) -%></td>
     </tr>
     <tr>
       <td>Hosted Images<br/>

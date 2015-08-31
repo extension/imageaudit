@@ -43,7 +43,7 @@
         <td><%= page.id -%> (<%= link_to('details',page_path(page.id)) -%>)</td>
         <td><%= page.title -%> (<%= pageinfo_link(page.id,'page info') -%>)</td>
         <td><%= number_with_delimiter(page.page_stat.unique_pageviews) -%></td>
-        <td><%= number_with_precision(page.page_stat.mean_unique_pageviews, precision: 1) -%></td>
+        <td><%= number_with_precision(page.page_stat.mean_unique_pageviews, precision: 2) -%></td>
       </tr>
     <%- end -%>
     </tbody>

@@ -41,14 +41,14 @@ class PagesController < ApplicationController
       @pagination_params[:viewed] = params[:viewed]
       @filter_strings << "Viewed pages"
       @filtered = true
-      page_scope = page_scope.viewed
+      page_scope = page_scope.viewed.joins(:page_stat).order('mean_unique_pageviews desc')
     end
 
     if(params[:unviewed] and TRUE_VALUES.include?(params[:unviewed]))
       @pagination_params[:copyright] = params[:copyright]
       @filter_strings << "Unviewed pages"
       @filtered = true
-      page_scope = page_scope.unviewed
+      page_scope = page_scope.unviewed.joins(:page_stat).order('mean_unique_pageviews asc')
     end
 
     if(params[:missing] and TRUE_VALUES.include?(params[:missing]))
