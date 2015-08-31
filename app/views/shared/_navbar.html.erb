@@ -20,7 +20,7 @@
 				</ul>
 			</li>
 			<%- else -%>
-			<%= nav_item(url_for(:controller => 'auth', :action => 'people'),'Sign in with eXtension') %>
+			<%= nav_item('/auth/extension','Sign in (eXtensionID)') %>
 			<%- end -%>
 		</ul>
 	</div>
