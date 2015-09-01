@@ -75,9 +75,10 @@
       <th>ID#</th>
       <th>Image</th>
       <th>Pages</th>
-      <th>Copyright</th>
       <th>Source</th>
       <th>Stock?</th>
+      <th>Copyright</th>
+      <th>Copyright Reviewed?</th
     </tr>
   </thead>
   <tbody>
@@ -90,7 +91,6 @@
               <%= link_to("#{pid}",page_path(pid)) -%>,
             <%- end -%>
         </td>
-        <td><%= image.copyright -%></td>
         <td><%= imageaudit_sourcelink(image) -%></td>
         <td>
           <%- image_audit = image.create_hosted_image_audit if(!image_audit = image.hosted_image_audit) -%>
@@ -101,6 +101,26 @@
           <%- else -%>
             <span class="label label-warning">No</span>
           <%- end -%>
+        </td>
+        <td><%= image.copyright -%></td>
+        <td>
+            Community:
+            <%- if image_audit.community_reviewed.nil? -%>
+              <span class="label label-info">not reviewed</span>
+            <%- elsif image_audit.community_reviewed? -%>
+              <span class="label label-success">Complete</span>
+            <%- else -%>
+              <span class="label label-warning">Incomplete</span>
+            <%- end -%>
+            <br/>
+            Staff:
+            <%- if image_audit.staff_reviewed.nil? -%>
+              <span class="label label-info">not reviewed</span>
+            <%- elsif image_audit.staff_reviewed? -%>
+              <span class="label label-success">Complete</span>
+            <%- else -%>
+              <span class="label label-warning">Incomplete</span>
+            <%- end -%>
         </td>
       </tr>
     <%- end -%>

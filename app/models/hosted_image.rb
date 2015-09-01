@@ -54,8 +54,15 @@ class HostedImage < ActiveRecord::Base
     joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 1').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
   end
 
+  def self.viewed_not_stock
+    joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 0').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
+  end
+
+
   def self.viewed_unreviewed_stock
-    joins(:hosted_image_audit).where('hosted_image_audits.is_stock IS NULL').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
+    stock = self.viewed_stock.pluck('hosted_images.id')
+    not_stock = self.viewed_not_stock.pluck('hosted_images.id')
+    self.viewed.where('hosted_images.id NOT IN (?)',stock + not_stock)
   end
 
   def filesys_path
