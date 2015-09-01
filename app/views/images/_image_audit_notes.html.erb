@@ -1,7 +1,18 @@
 <div class='image_audit_notes'>
-<%- if(image_audit.notes.present?) -%>
-  <%= image_audit.notes.html_safe %>
+<%- if(hosted_image_audit.notes.present?) -%>
+  <%= hosted_image_audit.notes.html_safe %>
 <%- else -%>
     <p><em>No notes provided</em></p>
 <%- end -%>
+
+<%- if @currentcontributor -%>
+  <p id="edit_notes_link_for_image_<%= @image.id %>"><small><%= link_to('edit','#',id: "edit_notes_for_image_#{@image.id}") %></small></p>
+<%- end -%>
+
+<script class="code" type="text/javascript">
+  $('#edit_notes_for_image_<%= @image.id %>').click(function() {
+    $('#edit_notes_link_for_image_<%= @image.id %>').hide();
+    $('#notes_for_image_<%= @image.id %>').html('<%= escape_javascript(render(partial: "image_audit_notes_form", locals: {image: @image, hosted_image_audit: @image_audit})) %>');
+ });
+</script>
 </div>

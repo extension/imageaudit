@@ -1,2 +1,2 @@
-$("#notes_for_image_<%= @image.id %>").html("<%= escape_javascript(render partial: 'image_audit_notes', locals: {image: @image, image_audit: @image_audit}) %>");
+$("#notes_for_image_<%= @image.id %>").html("<%= escape_javascript(render partial: 'image_audit_notes', locals: {image: @image, hosted_image_audit: @image_audit}) %>");
 $('#edit_notes_link_for_image_<%= @image.id %>').show();
