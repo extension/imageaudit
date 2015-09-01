@@ -153,7 +153,7 @@ class HostedImage < ActiveRecord::Base
                             current_notes: create_copyright)
 
             if(!image_audit.community_reviewed.nil? and image_audit.community_reviewed?)
-              image_audit.update_attributes({:community_reviewed => false, :community_reviewed_by => 1})
+              image_audit.update_attributes({:community_reviewed => nil, :community_reviewed_by => nil})
               AuditLog.create(contributor_id: 1,
                               auditable: image_audit,
                               changed_item: 'community_reviewed',
@@ -162,7 +162,7 @@ class HostedImage < ActiveRecord::Base
             end
 
             if(!image_audit.staff_reviewed.nil? and image_audit.staff_reviewed?)
-              image_audit.update_attributes({:staff_reviewed => false, :staff_reviewed_by => 1})
+              image_audit.update_attributes({:staff_reviewed => nil, :staff_reviewed_by => nil})
               AuditLog.create(contributor_id: 1,
                               auditable: image_audit,
                               changed_item: 'staff_reviewed',
