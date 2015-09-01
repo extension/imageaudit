@@ -61,8 +61,12 @@ class Link < ActiveRecord::Base
   scope :checked_yesterday_or_earlier, -> {where("DATE(last_check_at) <= ?",Date.yesterday)}
   scope :checked_over_one_month_ago, -> {where("DATE(last_check_at) <= DATE_SUB(?,INTERVAL 1 MONTH)",Date.yesterday)}
 
-  def self.rebuild
-    # self.connection.execute("truncate table #{self.table_name};")
+  def self.image_cleanup
+    list = Link.image.joins("LEFT join linkings on linkings.link_id = links.id").where("linkings.id IS NULL")
+    list.each do |l|
+      l.destroy
+    end
+    true
   end
 
 

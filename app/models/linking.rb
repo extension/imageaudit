@@ -12,9 +12,9 @@ class Linking < ActiveRecord::Base
   belongs_to :link
   belongs_to :page
 
-  def self.update_list
-    self.connection.execute("INSERT IGNORE INTO #{self.table_name} SELECT * from #{ArticleLinking.connection.current_database}.#{ArticleLinking.table_name};")
+  def self.rebuild
+    self.connection.execute("truncate table #{self.table_name};")
+    self.connection.execute("INSERT INTO #{self.table_name} SELECT * from #{ArticleLinking.connection.current_database}.#{ArticleLinking.table_name};")
   end
-
 
 end
