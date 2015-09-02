@@ -22,6 +22,7 @@ class ImagesController < ApplicationController
       image_scope = HostedImage.scoped({})
     end
 
+    # viewed, keep, keep_stock are mutually exclusive
     if(params[:viewed] and TRUE_VALUES.include?(params[:viewed]))
       @pagination_params[:viewed] = params[:viewed]
       @filter_strings << "Viewed images only"
@@ -29,11 +30,42 @@ class ImagesController < ApplicationController
       if(@community)
         image_scope = @community.viewed_images.viewed
       else
-        image_scope = image_scope.viewed
+        image_scope = HostedImage.viewed
       end
-    else
-      if(@community.nil?)
-        image_scope = image_scope.linked
+    end
+
+    if(params[:keep] and TRUE_VALUES.include?(params[:keep]))
+      @pagination_params[:keep] = params[:keep]
+      @filter_strings << "Kept images only"
+      @filtered = true
+      if(@community)
+        image_scope = @community.keep_images.keep
+      else
+        image_scope = HostedImage.keep
+      end
+    end
+
+    if(params[:keep_stock] and TRUE_VALUES.include?(params[:keep_stock]))
+      @pagination_params[:keep_stock] = params[:keep_stock]
+      @filter_strings << "Kept images only"
+      @filter_strings << "Stock images"
+      @filtered = true
+      if(@community)
+        image_scope = @community.keep_images.keep_stock
+      else
+        image_scope = HostedImage.keep_stock
+      end
+    end
+
+    if(params[:keep_unreviewed_stock] and TRUE_VALUES.include?(params[:keep_unreviewed_stock]))
+      @pagination_params[:keep_unreviewed_stock] = params[:keep_unreviewed_stock]
+      @filter_strings << "Kept images only"
+      @filter_strings << "Not yet reviewed for Stock"
+      @filtered = true
+      if(@community)
+        image_scope = @community.keep_images.keep_stock({is_stock: 'unreviewed'})
+      else
+        image_scope = HostedImage.keep_stock({is_stock: 'unreviewed'})
       end
     end
 
@@ -43,6 +75,12 @@ class ImagesController < ApplicationController
       @filtered = true
       image_scope = image_scope.with_copyright
     end
+
+
+    if(@community.nil? and !@filtered)
+      image_scope = image_scope.linked
+    end
+
     @images = image_scope.order("hosted_images.id desc").page(params[:page]).per(10)
   end
 

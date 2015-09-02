@@ -14,8 +14,11 @@ class Group < ActiveRecord::Base
   has_many :pages, :through => :tags
   has_many :hosted_images, :through => :pages, :uniq => true
   has_many :page_stats, :through => :pages
+  has_many :page_audits, :through => :pages
   has_many :links, :through => :pages
+  has_many :keep_images, :through => :page_audits, :source => :images_hosted, :uniq => true
   has_many :viewed_images, :through => :page_stats, :source => :images_hosted, :uniq => true
+  has_many :keep_links, :through => :page_audits, :source => :links, :uniq => true
   has_many :viewed_links, :through => :page_stats, :source => :links, :uniq => true
   has_one  :community_page_stat
 
@@ -57,9 +60,14 @@ class Group < ActiveRecord::Base
     attributes[:viewed_pages] = viewed_pages
     attributes[:viewed_percentiles] = viewed_percentiles
     attributes[:image_links] = self.links.image.count("distinct links.id")
-    attributes[:viewed_image_links] = self.viewed_links.image.joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct links.id")
+    attributes[:viewed_image_links] = self.links.image.joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct links.id")
     attributes[:hosted_images] = self.hosted_images.published_count
     attributes[:viewed_hosted_images] = self.viewed_images.viewed_count
+    attributes[:keep_pages] = self.pages.keep.count
+    attributes[:keep_image_links] = self.keep_links.image.joins(:page_audits).where("page_audits.keep_published = 1").count("distinct links.id")
+    attributes[:keep_hosted_images] = self.keep_images.keep.count
+    attributes[:keep_stock_images] = self.keep_images.keep_stock.count
+    attributes[:keep_not_stock_images] = self.keep_images.keep_stock({:is_stock => false}).count
     attributes
   end
 

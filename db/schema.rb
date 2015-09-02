@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150831214720) do
+ActiveRecord::Schema.define(:version => 20150902152929) do
 
   create_table "audit_logs", :force => true do |t|
     t.string   "auditable_type",       :null => false
@@ -37,8 +37,13 @@ ActiveRecord::Schema.define(:version => 20150831214720) do
     t.integer  "viewed_image_links"
     t.integer  "hosted_images"
     t.integer  "viewed_hosted_images"
-    t.datetime "created_at",           :null => false
-    t.datetime "updated_at",           :null => false
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
+    t.integer  "keep_pages"
+    t.integer  "keep_image_links"
+    t.integer  "keep_hosted_images"
+    t.integer  "keep_stock_images"
+    t.integer  "keep_not_stock_images"
   end
 
   add_index "community_page_stats", ["group_id"], :name => "community_ndx", :unique => true

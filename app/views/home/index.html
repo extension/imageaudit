@@ -1,10 +1,67 @@
 <h1>Content Summary</h1>
-<table class="table">
+<table class="table table-striped">
     <tr>
   		<td>Total Pages</td>
     	<td class="mednumber"><%= link_to(number_with_delimiter(@summary_data['total_pages']), pages_path) -%></td>
       <td>&nbsp;</td>
     </tr>
+    <tr>
+      <td>Keep Pages</td>
+      <td style="white-space:nowrap;">
+        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['keep_pages']), pages_path(:keep => 'true')) -%></span>
+        <span class="mednumber">(<%= percentage_display(@summary_data['keep_pages'],@summary_data['total_pages']) -%>)</span>
+      </td>
+      <td>
+        <p><em>Pages marked by eXtension Core Team members or by the Community <strong>to keep</strong></em></p>
+        <p><em>The initial set included</em> viewed pages <em>those with <strong>at least one or more</strong>
+               mean unique pageviews per week between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%>;
+               pages that had been published since <%= PageStat::END_DATE -%>; and pages tagged "bio","homage", or "contents"</em></p>
+      </td>
+    </tr>
+    <tr>
+      <td>Unpublish Pages</td>
+      <td style="white-space:nowrap;">
+        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['total_pages'] - @summary_data['keep_pages']) ), pages_path(:unpublish => 'true')) -%></span>
+        <span class="mednumber">(<%= percentage_display((@summary_data['total_pages'] - @summary_data['keep_pages']),@summary_data['total_pages']) -%>)</span>
+      </td>
+      <td>
+        <p><em>Pages marked by eXtension Core Team members or by the Community <strong>to keep</strong></em></p>
+        <p><em>The initial set included</em> unviewed pages <em>those with <strong>less than one</strong>
+               mean unique pageviews per week between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%>
+               that were not tagged "bio","homage", or "contents"</em></p>
+      </td>
+    </tr>
+    <tr>
+      <td>Kept Hosted Images</td>
+      <td>
+        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['keep_hosted_images']), images_path(:keep => 'true')) -%></span><br/>
+      </td>
+      <td>
+        <em>Images uploaded to either the legacy cop.extension.org cms or the create.extension.org cms that are linked to within <strong>pages to keep</strong></em>
+      </td>
+    </tr>
+    <tr>
+      <td>Kept Hosted Images - Stock</td>
+      <td>
+        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['keep_stock_images']), images_path(:keep_stock => 'true')) -%></span><br/>
+      </td>
+      <td>
+        <em>Images on <strong>pages to keep</strong> that have been reviewed as <strong>a stock image</strong> by eXtension Core Team members or the Community </em>
+      </td>
+    </tr>
+    <tr>
+      <td>Kept Hosted Images - Not Yet Reviewed for Stock</td>
+      <td>
+        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['keep_hosted_images'] - (@summary_data['keep_stock_images'] + @summary_data['keep_not_stock_images']))), images_path(:keep_unreviewed_stock => 'true')) -%></span>
+      </td>
+      <td>
+        <em>Images on <strong>pages to keep</strong> that have <strong>not yet been reviewed</strong> for stock image status by eXtension Core Team members or the Community</em>
+      </td>
+    </tr>
+
+</table>
+<h3>Additional Content Statistics</h3>
+<table class="table">
     <tr>
       <td>Eligible Pages</td>
       <td class="mednumber"><%= link_to(number_with_delimiter(@summary_data['eligible_pages']), pages_path(:eligible => 'true')) -%></td>
@@ -57,7 +114,7 @@
       </td>
     </tr>
     <tr>
-      <td>Hosted Images</td>
+      <td>All Hosted Images</td>
       <td>
         <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['hosted_images']), images_path) -%></span><br/>
       </td>
@@ -65,28 +122,18 @@
         <em>Images uploaded to either the legacy cop.extension.org cms or the create.extension.org cms</em>
       </td>
     </tr>
-    <tr>
-      <td>Viewed (Hosted) Images</td>
-      <td>
-        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['viewed_hosted_images']), images_path(:viewed => 'true')) -%></span><br/>
-      </td>
-      <td>
-        <em>Images uploaded to either the legacy cop.extension.org cms or the create.extension.org cms that are linked to within <strong>viewed</strong> pages</em>
-      </td>
-    </tr>
-
 </table>
 
 <table class="table table-striped">
   <thead>
     <tr>
       <th>Community Name</th>
-      <th>Eligible Pages</th>
-      <th>Viewed Pages (%)</th>
-      <th>Unviewed Pages (%)</th>
-      <th>Image Links</th>
+      <th>Total Pages</th>
+      <th>Keep Pages (%)</th>
+      <th>Unpublished Pages (%)</th>
       <th>Hosted Images</th>
-      <th>Viewed (Hosted) Images</th>
+      <th>Kept Hosted Images</th>
+      <th>Kept Hosted Images - Stock</th>
     </tr>
   </thead>
   <tbody>
@@ -102,18 +149,19 @@
           <td>0</td>
           <td>0</td>
         <%- else -%>
-          <td><%= number_with_delimiter(stats['eligible_pages']) -%></td>
+          <td><%= number_with_delimiter(stats['total_pages']) -%></td>
           <td>
-            <%= number_with_delimiter(stats['viewed_pages']) -%>
-            (<%= percentage_display(stats['viewed_pages'],stats['eligible_pages']) -%>)
+            <%= number_with_delimiter(stats['keep_pages']) -%>
+            (<%= percentage_display(stats['keep_pages'],stats['total_pages']) -%>)
           </td>
           <td>
-            <%= number_with_delimiter((stats['eligible_pages'] - stats['viewed_pages']) ) -%>
-            (<%= percentage_display((stats['eligible_pages'] - stats['viewed_pages']),stats['eligible_pages']) -%>)
+            <%= number_with_delimiter((stats['total_pages'] - stats['keep_pages']) ) -%>
+            (<%= percentage_display((stats['total_pages'] - stats['keep_pages']),stats['total_pages']) -%>)
           </td>
-          <td><%= number_with_delimiter(stats['image_links']) -%></td>
           <td><%= number_with_delimiter(stats['hosted_images']) -%></td>
-          <td><%= number_with_delimiter(stats['viewed_hosted_images']) -%></td>
+          <td><%= number_with_delimiter(stats['keep_hosted_images']) -%></td>
+          <td><%= number_with_delimiter(stats['keep_stock_images']) -%></td>
+
         <%- end -%>
         </tr>
       <%- end -%>

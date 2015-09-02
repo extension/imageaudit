@@ -36,8 +36,8 @@ class Page < ActiveRecord::Base
   scope :unviewed, -> {joins(:page_stat).where("page_stats.weeks_published > 0").where("page_stats.mean_unique_pageviews < 1")}
   scope :missing, -> {joins(:page_stat).where("page_stats.weeks_published > 0").where("page_stats.mean_unique_pageviews = 0")}
 
-
-
+  scope :keep, -> {joins(:page_audit).where("page_audits.keep_published = 1")}
+  scope :unpublish, -> {joins(:page_audit).where("page_audits.keep_published = 0")}
 
 
   def display_title(options = {})
@@ -145,6 +145,15 @@ class Page < ActiveRecord::Base
     attributes[:hosted_images] = self.hosted_images.count
     attributes
   end
+
+  def self.make_audits
+    without_audit = Page.joins("LEFT JOIN page_audits on page_audits.page_id = pages.id").where("page_audits.id IS NULL")
+    without_audit.each do |page|
+      page.create_page_audit(keep_published: 1, keep_published_by: 1)
+    end
+    true
+  end
+
 
 
 end

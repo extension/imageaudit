@@ -48,18 +48,33 @@ class PagesController < ApplicationController
     end
 
     if(params[:unviewed] and TRUE_VALUES.include?(params[:unviewed]))
-      @pagination_params[:copyright] = params[:copyright]
+      @pagination_params[:unviewed] = params[:unviewed]
       @filter_strings << "Unviewed pages"
       @filtered = true
       page_scope = page_scope.unviewed.joins(:page_stat).order('mean_unique_pageviews asc')
     end
 
     if(params[:missing] and TRUE_VALUES.include?(params[:missing]))
-      @pagination_params[:copyright] = params[:copyright]
+      @pagination_params[:missing] = params[:missing]
       @filter_strings << "Missing pages"
       @filtered = true
       page_scope = page_scope.missing
     end
+
+    if(params[:keep] and TRUE_VALUES.include?(params[:keep]))
+      @pagination_params[:keep] = params[:keep]
+      @filter_strings << "Pages to Keep"
+      @filtered = true
+      page_scope = page_scope.keep
+    end
+
+    if(params[:unpublish] and TRUE_VALUES.include?(params[:unpublish]))
+      @pagination_params[:unpublish] = params[:unpublish]
+      @filter_strings << "Pages to unpublish"
+      @filtered = true
+      page_scope = page_scope.unpublish
+    end
+
     @pages = page_scope.page(params[:page]).per(25)
   end
 

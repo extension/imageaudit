@@ -8,7 +8,7 @@
 class Rebuild < ActiveRecord::Base
   attr_accessible :group, :single_model, :single_action, :in_progress, :started, :finished, :run_time, :current_model, :current_action, :current_start
 
-  ARTICLE_REBUILDS = ['Page','Tag','PageTagging']
+  ARTICLE_REBUILDS = ['Page',{'Page' => 'make_audits'},'Tag','PageTagging']
   ARTICLE_UPDATES = [{'Link' => 'update_list'},'Linking',{'Link' => 'image_cleanup'}]
   PEOPLE_REBUILDS = ['Group','Contributor','ContributorGroup']
   IMAGE_UPDATES = [{'HostedImage' => 'update_from_create'},{'HostedImage' => 'update_copyrights'},{'HostedImageLink' => 'update_list'}]

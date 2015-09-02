@@ -71,20 +71,25 @@ class PageStat < ActiveRecord::Base
       eligible_pages = self.eligible_pages.count
       viewed_pages = self.viewed.count
       viewed_percentiles = self.mup_percentiles
+      keep_pages = Page.keep.count
 
       attributes = {}
       attributes[:total_pages] = total_pages
       attributes[:eligible_pages] = eligible_pages
       attributes[:viewed_pages] = viewed_pages
+      attributes[:keep_pages] = keep_pages
+
       attributes[:viewed_percentiles] = viewed_percentiles
       attributes[:image_links] = Link.image.count("distinct links.id")
       attributes[:viewed_image_links] = Link.image.joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct links.id")
+      attributes[:keep_image_links] = Link.image.joins(:page_audits).where("page_audits.keep_published = 1").count("distinct links.id")
 
-      hosted_images = HostedImage.published_count
-      viewed_hosted_images = HostedImage.viewed_count
+      attributes[:hosted_images] = HostedImage.published_count
+      attributes[:viewed_hosted_images] = HostedImage.viewed_count
 
-      attributes[:hosted_images] = hosted_images
-      attributes[:viewed_hosted_images] = viewed_hosted_images
+      attributes[:keep_hosted_images] = HostedImage.keep.count
+      attributes[:keep_stock_images] = HostedImage.keep_stock.count
+      attributes[:keep_not_stock_images] = HostedImage.keep_stock({:is_stock => false}).count
 
       if(cps = CommunityPageStat.where(group_id: 0).first)
         cps.update_attributes(attributes)

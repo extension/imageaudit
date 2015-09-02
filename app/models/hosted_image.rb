@@ -11,6 +11,7 @@ class HostedImage < ActiveRecord::Base
   has_many :linkings, :through => :links
   has_many :pages, :through => :linkings
   has_many :page_stats, :through => :pages
+  has_many :page_audits, :through => :pages
   has_one  :hosted_image_audit
 
   scope :from_copwiki, -> {where(source: 'copwiki')}
@@ -46,6 +47,12 @@ class HostedImage < ActiveRecord::Base
     joins(:hosted_image_links).uniq
   end
 
+  def self.published_count
+    joins(:hosted_image_links).count('distinct hosted_image_links.hosted_image_id')
+  end
+
+  # viewed
+
   def self.viewed
     joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
   end
@@ -58,12 +65,47 @@ class HostedImage < ActiveRecord::Base
     joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 0').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
   end
 
-
   def self.viewed_unreviewed_stock
     stock = self.viewed_stock.pluck('hosted_images.id')
     not_stock = self.viewed_not_stock.pluck('hosted_images.id')
     self.viewed.where('hosted_images.id NOT IN (?)',stock + not_stock)
   end
+
+
+  def self.viewed_count
+    joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct hosted_images.id")
+  end
+
+  def self.viewed_stock_count
+    joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 1').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct hosted_images.id")
+  end
+
+  def self.viewed_unreviewed_stock_count
+    joins(:hosted_image_audit).where('hosted_image_audits.is_stock IS NULL').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct hosted_images.id")
+  end
+
+  # keepers
+
+  def self.keep(options={})
+    keep_published = options[:keep_published].nil? ? true : options[:keep_published]
+    joins(:page_audits).where("page_audits.keep_published = ?",keep_published).uniq
+  end
+
+  def self.keep_stock(options={})
+    keep_published = options[:keep_published].nil? ? true : options[:keep_published]
+    if(options[:is_stock].nil?)
+      is_stock = true
+      joins(:hosted_image_audit).where('hosted_image_audits.is_stock = ?',is_stock).joins(:page_audits).where("page_audits.keep_published = ?",keep_published).uniq
+    elsif(options[:is_stock] == 'unreviewed')
+      stock = joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 1').joins(:page_audits).where("page_audits.keep_published = ?",keep_published).pluck('hosted_images.id')
+      not_stock = joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 0').joins(:page_audits).where("page_audits.keep_published = ?",keep_published).pluck('hosted_images.id')
+      self.keep(:keep_published => keep_published).where('hosted_images.id NOT IN (?)',stock + not_stock)
+    else
+      is_stock = options[:is_stock]
+      joins(:hosted_image_audit).where('hosted_image_audits.is_stock = ?',is_stock).joins(:page_audits).where("page_audits.keep_published = ?",keep_published).uniq
+    end
+  end
+
 
   def filesys_path
     if(self.source == 'copwiki')
@@ -95,21 +137,7 @@ class HostedImage < ActiveRecord::Base
     end
   end
 
-  def self.published_count
-    joins(:hosted_image_links).count('distinct hosted_image_links.hosted_image_id')
-  end
 
-  def self.viewed_count
-    joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct hosted_images.id")
-  end
-
-  def self.viewed_stock_count
-    joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 1').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct hosted_images.id")
-  end
-
-  def self.viewed_unreviewed_stock_count
-    joins(:hosted_image_audit).where('hosted_image_audits.is_stock IS NULL').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct hosted_images.id")
-  end
 
   def self.update_from_create
     # DOES NOT UPDATE COPYRIGHT - that is in a separate procedure

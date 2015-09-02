@@ -7,6 +7,8 @@
 
 class PageAudit < ActiveRecord::Base
   belongs_to :page
+  has_many :images_hosted, :through => :page, :source => :hosted_images
+  has_many :links, :through => :page
   belongs_to :keep_published_reviewer,  :class_name => "Contributor", :foreign_key => "keep_published_by"
   belongs_to :community_reviewer,  :class_name => "Contributor", :foreign_key => "community_reviewed_by"
   belongs_to :staff_reviewer,      :class_name => "Contributor", :foreign_key => "staff_reviewed_by"
