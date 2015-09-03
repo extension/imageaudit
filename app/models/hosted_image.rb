@@ -68,7 +68,12 @@ class HostedImage < ActiveRecord::Base
   def self.viewed_unreviewed_stock
     stock = self.viewed_stock.pluck('hosted_images.id')
     not_stock = self.viewed_not_stock.pluck('hosted_images.id')
-    self.viewed.where('hosted_images.id NOT IN (?)',stock + not_stock)
+    reviewed = stock+not_stock
+    if(!reviewed.blank?)
+      self.viewed.where('hosted_images.id NOT IN (?)',reviewed)
+    else
+      self.viewed
+    end
   end
 
 
@@ -99,7 +104,12 @@ class HostedImage < ActiveRecord::Base
     elsif(options[:is_stock] == 'unreviewed')
       stock = joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 1').joins(:page_audits).where("page_audits.keep_published = ?",keep_published).pluck('hosted_images.id')
       not_stock = joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 0').joins(:page_audits).where("page_audits.keep_published = ?",keep_published).pluck('hosted_images.id')
-      self.keep(:keep_published => keep_published).where('hosted_images.id NOT IN (?)',stock + not_stock)
+      reviewed = stock+not_stock
+      if(!reviewed.blank?)
+        self.keep(:keep_published => keep_published).where('hosted_images.id NOT IN (?)',reviewed)
+      else
+        self.keep(:keep_published => keep_published)
+      end
     else
       is_stock = options[:is_stock]
       joins(:hosted_image_audit).where('hosted_image_audits.is_stock = ?',is_stock).joins(:page_audits).where("page_audits.keep_published = ?",keep_published).uniq
