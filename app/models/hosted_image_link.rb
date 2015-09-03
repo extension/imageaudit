@@ -13,4 +13,10 @@ class HostedImageLink < ActiveRecord::Base
   def self.update_list
     Link.connect_unlinked_images
   end
+
+  def self.rebuild
+    self.connection.execute("truncate table #{self.table_name};")
+    Link.connect_unlinked_images
+  end
+
 end
