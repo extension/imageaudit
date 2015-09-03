@@ -1,7 +1,10 @@
 <h1>Pages</h1>
+<div class="row">
+  <div class="col-md-8">
 <%- if @filter_strings -%>
 <p>Filtered by: <%= @filter_strings.join(' | ') -%></p>
 <%- end -%>
+
 <div id="paginator_wrapper">
   <%- if @pages.length > 0 -%>
     <p class="display_results">Displaying <strong><%= @pages.offset_value + 1 %>-<%= @pages.offset_value + @pages.length %></strong> of <strong><%= @pages.total_count %></strong></p>
@@ -10,22 +13,46 @@
   <%- end -%>
   <%= paginate @pages, :params => @pagination_params %>
 </div>
+</div>
+<%- if(!@community.nil?) -%>
+  <div class="col-md-3">
+  <p><%= link_to("<i class='fa fa-file-o'></i> Download this list (.csv)".html_safe,
+              pages_path(@pagination_params.merge(download: 'csv')),
+              :class => 'btn btn-primary') %></p>
+<p><em>Downloads can take about 10 seconds for every 500 pages to generate, it may take a minute or two after you
+  press the button for the file to start downloading</em></p>
+</div>
+<%- end -%>
+</div>
+</div>
+<div class="row">
+  <div class="col-md-12">
 <table class="table table-striped">
   <thead>
     <tr>
       <th>Page ID#</th>
+      <th>Keep Published?</th>
       <th>Page Title</th>
       <th>Total Unique Pageviews</th>
       <th>Mean Unique Pageviews</th>
       <th>Hosted Images</th>
       <th>Hosted Imagelist</th>
-
     </tr>
   </thead>
   <tbody>
     <%- @pages.each do |page| -%>
+      <%- page_audit = page.page_audit -%>
       <tr>
         <td><%= page.id -%> (<%= link_to('details',page_path(page.id)) -%>)</td>
+        <td>
+          <%- if page_audit.keep_published.nil? -%>
+            <span class="label label-info">not reviewed</span>
+          <%- elsif page_audit.keep_published? -%>
+            <span class="label label-success">Yes</span>
+          <%- else -%>
+            <span class="label label-warning">No</span>
+          <%- end -%>
+        </td>
         <td><%= page.title -%> (<%= pageinfo_link(page.id,'page info') -%>)</td>
         <td><%= number_with_delimiter(page.page_stat.unique_pageviews) -%></td>
         <td><%= number_with_precision(page.page_stat.mean_unique_pageviews, precision: 2) -%></td>
@@ -47,3 +74,5 @@
     <%- end -%>
     <%= paginate @pages, :params => @pagination_params %>
   </div>
+</div>
+</div>

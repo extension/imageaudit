@@ -7,6 +7,7 @@
 
 class Page < ActiveRecord::Base
   include CacheTools
+  include MarkupScrubber
   has_many :year_analytics
   has_many :page_taggings
   has_many :tags, :through => :page_taggings

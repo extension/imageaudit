@@ -6,6 +6,7 @@
 #  see LICENSE file
 
 class PageStat < ActiveRecord::Base
+
   belongs_to :page
   has_many :images_hosted, :through => :page, :source => :hosted_images
   has_many :links, :through => :page

@@ -5,6 +5,7 @@
 #
 # see LICENSE file
 
+require 'csv'
 
 class PagesController < ApplicationController
 
@@ -75,7 +76,20 @@ class PagesController < ApplicationController
       page_scope = page_scope.unpublish
     end
 
-    @pages = page_scope.page(params[:page]).per(25)
+
+    if(!params[:download].nil? and params[:download] == 'csv')
+      @page_title_display = "pagelist-"
+      if(@filter_strings)
+        @page_title_display << @filter_strings.join('-')
+      end
+      @page_title_display += "-" + Time.now.strftime("%Y-%m-%d")
+      @pages = page_scope.all
+      send_data(csv_output(@pages),
+                :type => 'text/csv; charset=iso-8859-1; header=present',
+                :disposition => "attachment; filename=#{@page_title_display.downcase.gsub(' ','_')}.csv")
+    else
+      @pages = page_scope.page(params[:page]).per(25)
+    end
   end
 
 
@@ -111,6 +125,64 @@ class PagesController < ApplicationController
     end
     respond_to do |format|
       format.js
+    end
+  end
+
+  protected
+
+  def csv_output(pages)
+    CSV.generate do |csv|
+      headers = []
+      headers << 'Page ID#'
+      headers << 'Keep Published'
+      headers << 'Page Type'
+      headers << "Weeks Published (Prior to #{PageStat::END_DATE})"
+      headers << 'Unique Pageviews'
+      headers << 'Mean Unique Pageviews'
+      headers << 'Page Source'
+      headers << 'Source URL'
+      headers << 'Pageinfo URL'
+      headers << 'Image Links'
+      headers << 'Hosted Images'
+      headers << 'Communities'
+      headers << 'Tags'
+      headers << 'Notes'
+      csv << headers
+      pages.each do |page|
+        page_audit = page.page_audit
+        page_stat = page.page_stat
+        row = []
+        row << page.id
+        if(page_audit.keep_published.nil?)
+          row << 'Unreviewed'
+        elsif(page_audit.keep_published?)
+          row << 'Yes'
+        else
+          row << 'No'
+        end
+        row << "#{page.datatype}"
+        row << page_stat.weeks_published
+        if(page_stat.weeks_published > 0)
+          row << page_stat.unique_pageviews
+          row << page_stat.mean_unique_pageviews
+        else
+          row << 'n/a'
+          row << 'n/a'
+        end
+        row << "#{page.source}"
+        row << "#{page.source_url}"
+        row << "http://#{Settings.articles_site}/pageinfo/#{page.id}"
+        row << page_stat.image_links
+        row << page_stat.hosted_images
+        row << "#{page.groups.publishing.map(&:name).join(',')}"
+        row << "#{page.tags.map(&:name).join(',')}"
+        if(!page_audit.notes.blank?)
+          row << "#{page_audit.notes.html_to_pretty_text}"
+        else
+          row << ''
+        end
+        csv << row
+      end
     end
   end
 
