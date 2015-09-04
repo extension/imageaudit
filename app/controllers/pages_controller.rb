@@ -66,14 +66,14 @@ class PagesController < ApplicationController
       @pagination_params[:keep] = params[:keep]
       @filter_strings << "Pages to Keep"
       @filtered = true
-      page_scope = page_scope.keep
+      page_scope = page_scope.keep.joins(:page_stat).order('mean_unique_pageviews desc')
     end
 
     if(params[:unpublish] and TRUE_VALUES.include?(params[:unpublish]))
       @pagination_params[:unpublish] = params[:unpublish]
       @filter_strings << "Pages to unpublish"
       @filtered = true
-      page_scope = page_scope.unpublish
+      page_scope = page_scope.unpublish.joins(:page_stat).order('mean_unique_pageviews asc')
     end
 
 
