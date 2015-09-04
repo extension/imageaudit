@@ -61,6 +61,8 @@
       <th>Page Title</th>
       <th>Total Unique Pageviews</th>
       <th>Mean Unique Pageviews</th>
+      <th>Source Page Created At</th>
+      <th>Source Page Last Updated At</th>
     </tr>
   </thead>
   <tbody>
@@ -70,6 +72,8 @@
         <td><%= page.title -%> (<%= pageinfo_link(page.id,'page info') -%>)</td>
         <td><%= number_with_delimiter(page.page_stat.unique_pageviews) -%></td>
         <td><%= number_with_precision(page.page_stat.mean_unique_pageviews, precision: 2) -%></td>
+        <td><%= page.source_created_at.to_s -%></td>
+        <td><%= page.source_updated_at.to_s -%></td>
       </tr>
     <%- end -%>
     </tbody>

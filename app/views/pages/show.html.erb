@@ -42,7 +42,15 @@
         <td><%= link_to(@page.source_url, @page.source_url)%></td>
     </tr>
     <tr>
-      <td><%= pageinfo_link(@page.id,'More page details') %></td>
+        <td>Source Page Created At</td>
+        <td><%= @page.source_created_at.to_s -%></td>
+    </tr>
+    <tr>
+        <td>Source Page Last Updated At</td>
+        <td><%= @page.source_updated_at.to_s -%></td>
+    </tr>
+    <tr>
+      <td><%= pageinfo_link(@page.id,'More page details...') %></td>
       <td>&nbsp;</td>
     </tr>
 </table>
