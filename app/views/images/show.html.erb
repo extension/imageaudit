@@ -8,7 +8,12 @@
         </tr>
         <tr>
             <td>Source</td>
-            <td><%= imageaudit_sourcelink(@image) -%></td>
+            <td>
+              <%= imageaudit_sourcelink(@image) -%>
+              <%- if(@image.source == 'create' and @image.original_wiki?) -%>
+                <br/><em> metadata imported from copwiki image information </em>
+              <%- end -%>
+            </td>
         </tr>
         <tr>
             <td>Description</td>

@@ -33,7 +33,11 @@
               <%= link_to("#{pid}",page_path(pid)) -%>,
             <%- end -%>
         </td>
-        <td><%= imageaudit_sourcelink(image) -%></td>
+        <td><%= imageaudit_sourcelink(image) -%>
+          <%- if(image.source == 'create' and image.original_wiki?) -%>
+            <br/><em> originally copwiki </em>
+          <%- end -%>
+        </td>
         <td>
           <%- if image_audit.is_stock.nil? -%>
             <span class="label label-info">not reviewed</span>
