@@ -8,6 +8,7 @@
 class Contributor < ActiveRecord::Base
   has_many :contributor_groups
   has_many :groups, through: :contributor_groups
+  has_many :audit_logs
 
   # duplicated from darmok
   # TODO - sanity check this

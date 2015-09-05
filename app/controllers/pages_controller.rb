@@ -97,7 +97,8 @@ class PagesController < ApplicationController
     @page = Page.find(params[:id])
     @page_audit = @page.page_audit
     if(!params[:keep_published].nil?)
-      previous_value = @page_audit.keep_published?
+      keep_published = TRUE_VALUES.include?(params[:keep_published])
+      previous_value = @page_audit.keep_published
       is_stock = TRUE_VALUES.include?(params[:keep_published])
       @page_audit.update_attributes({keep_published: keep_published, keep_published_by: @currentcontributor.id})
       AuditLog.create(contributor: @currentcontributor,

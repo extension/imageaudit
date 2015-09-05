@@ -55,4 +55,18 @@ module ApplicationHelper
     "<li#{list_item_class}>#{link_to(label,path)}</li>".html_safe
   end
 
+  def audit_log_itemlink(audit_log)
+    ao = audit_log.changed_object
+    if(ao.nil?)
+      "#{audit_log.audit_type} ID# Unknown (item has been removed from imageaudit database)"
+    elsif(ao.class.name == 'HostedImage')
+      link_to("Image ID# #{ao.id}",image_path(id: ao.id)).html_safe
+    elsif(ao.class.name == 'Page')
+      link_to("Page ID# #{ao.id}",page_path(id: ao.id)).html_safe
+    else
+      "#{audit_log.audit_type} ID# #{ao.id}"
+    end
+  end
+
+
 end

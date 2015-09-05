@@ -18,6 +18,7 @@ class HostedImage < ActiveRecord::Base
   scope :from_create, -> {where(source: 'create')}
   scope :with_copyright, -> {where("copyright IS NOT NULL")}
 
+  has_many :audit_logs, :as => :auditable
 
   def filemime
     MimeMagic.by_magic(File.open(self.filesys_path))

@@ -9,6 +9,7 @@ Imageaudit::Application.routes.draw do
   end
 
   resources :communities, :only => [:index, :show]
+  resources :audit_logs, :only => [:index, :show]
 
   resources :images, :only => [:index, :show] do
     member do

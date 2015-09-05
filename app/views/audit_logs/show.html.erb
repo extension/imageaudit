@@ -1,0 +1,42 @@
+<h1>Audit Details for Audit# <%= @audit_log.id -%></h1>
+<div class="row">
+  <div class="col-md-12">
+    <table class="table">
+        <tr>
+          <td>Who</td>
+          <td><%= link_to(@audit_log.contributor.fullname,audit_logs_path(:contributor_id => @audit_log.contributor.id)) -%></td>
+        </tr>
+        <tr>
+      		<td>Audit Type</td>
+        	<td><%= @audit_log.audit_type -%></td>
+        </tr>
+        <tr>
+            <td>Audited Item</td>
+            <td><%= audit_log_itemlink(@audit_log) -%></td>
+        </tr>
+        <tr>
+            <td>Action</td>
+            <td><%= @audit_log.audit_action_string -%></td>
+        </tr>
+        <%- if(@audit_log.changed_item == 'notes') -%>
+          <tr>
+            <td>Previous Notes</td>
+            <td><%= (@audit_log.previous_notes.blank? ? 'n/a' : @audit_log.previous_notes) -%></td>
+          </tr>
+          <tr>
+            <td>Current Notes</td>
+            <td><%= (@audit_log.current_notes.blank? ? 'n/a' : @audit_log.current_notes) -%></td>
+          </tr>
+        <%- elsif(@audit_log.changed_item == 'copyright') -%>
+          <tr>
+            <td>Previous Copyright</td>
+            <td><%= (@audit_log.previous_notes.blank? ? 'n/a' : @audit_log.previous_notes) -%></td>
+          </tr>
+          <tr>
+            <td>Current Copyright</td>
+            <td><%= (@audit_log.current_notes.blank? ? 'n/a' : @audit_log.current_notes) -%></td>
+          </tr>
+        <%- end -%>
+    </table>
+  </div>
+</div>
