@@ -7,6 +7,10 @@
           <td><%= link_to(@audit_log.contributor.fullname,audit_logs_path(:contributor_id => @audit_log.contributor.id)) -%></td>
         </tr>
         <tr>
+          <td>When</td>
+          <td><%= audit_log.created_at.to_s -%></td>
+        </tr>
+        <tr>
       		<td>Audit Type</td>
         	<td><%= @audit_log.audit_type -%></td>
         </tr>
