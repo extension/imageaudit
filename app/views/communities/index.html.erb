@@ -1,0 +1,44 @@
+<h1>Communities</h1>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Community Name</th>
+      <th>Total Pages</th>
+      <th>Keep Pages (%)</th>
+      <th>Unpublish Pages (%)</th>
+      <th>Hosted Images</th>
+      <th>Kept Hosted Images</th>
+      <th>Kept Hosted Images - Stock</th>
+    </tr>
+  </thead>
+  <tbody>
+    <%- Group.publishing.joins(:community_page_stat).order('community_page_stats.viewed_hosted_images DESC').each do |pc| -%>
+      <%- stats = pc.community_page_stat -%>
+        <tr>
+        <td><%= link_to(pc.name,community_path(pc.id)) -%></td>
+        <%- if stats['pages'] == 0 -%>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0</td>
+        <%- else -%>
+          <td><%= number_with_delimiter(stats['total_pages']) -%></td>
+          <td>
+            <%= number_with_delimiter(stats['keep_pages']) -%>
+            (<%= percentage_display(stats['keep_pages'],stats['total_pages']) -%>)
+          </td>
+          <td>
+            <%= number_with_delimiter((stats['total_pages'] - stats['keep_pages']) ) -%>
+            (<%= percentage_display((stats['total_pages'] - stats['keep_pages']),stats['total_pages']) -%>)
+          </td>
+          <td><%= number_with_delimiter(stats['hosted_images']) -%></td>
+          <td><%= number_with_delimiter(stats['keep_hosted_images']) -%></td>
+          <td><%= number_with_delimiter(stats['keep_stock_images']) -%></td>
+
+        <%- end -%>
+        </tr>
+      <%- end -%>
+    </tbody>
+  </table>
