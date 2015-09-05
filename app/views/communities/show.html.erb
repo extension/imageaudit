@@ -50,6 +50,16 @@
       </td>
     </tr>
     <tr>
+      <td>Kept Hosted Images - Not Stock</td>
+      <td>
+        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['keep_not_stock_images']), images_path(:community_id => @community.id, :keep_stock => 'false')) -%></span><br/>
+      </td>
+      <td>
+        <em>Images on <strong>pages to keep</strong> that have been reviewed as <strong>not a stock image</strong> by eXtension Core Team members or the Community </em>
+      </td>
+    </tr>
+
+    <tr>
       <td>Kept Hosted Images - Not Yet Reviewed for Stock</td>
       <td>
         <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['keep_hosted_images'] - (@summary_data['keep_stock_images'] + @summary_data['keep_not_stock_images']))), images_path(:community_id => @community.id, :keep_unreviewed_stock => 'true')) -%></span>

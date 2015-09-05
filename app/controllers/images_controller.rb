@@ -57,6 +57,18 @@ class ImagesController < ApplicationController
       end
     end
 
+    if(params[:keep_stock] and FALSE_VALUES.include?(params[:keep_stock]))
+      @pagination_params[:keep_stock] = params[:keep_stock]
+      @filter_strings << "Kept images only"
+      @filter_strings << "Non-Stock images"
+      @filtered = true
+      if(@community)
+        image_scope = @community.keep_images.keep_stock(:is_stock => false)
+      else
+        image_scope = HostedImage.keep_stock(:is_stock => false)
+      end
+    end
+
     if(params[:keep_unreviewed_stock] and TRUE_VALUES.include?(params[:keep_unreviewed_stock]))
       @pagination_params[:keep_unreviewed_stock] = params[:keep_unreviewed_stock]
       @filter_strings << "Kept images only"
