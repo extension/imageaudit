@@ -23,11 +23,13 @@ if(TRUE_VALUES.include?(ENV['MIGRATE']))
   after "deploy:update_code", "deploy:link_and_copy_configs"
   after "deploy:update_code", "deploy:cleanup"
   after "deploy:update_code", "deploy:migrate"
+  after "deploy", "sidekiq:start"
   after "deploy", "deploy:web:enable"
 else
   before "deploy", "deploy:checks:git_migrations"
   after "deploy:update_code", "deploy:link_and_copy_configs"
   after "deploy:update_code", "deploy:cleanup"
+  after "deploy", "sidekiq:start"
 end
 
 # Add tasks to the deploy namespace
@@ -94,4 +96,35 @@ namespace :deploy do
     end
   end
 
+end
+
+namespace :sidekiq do
+  desc 'Stop sidekiq'
+  task 'stop', :roles => :app do
+    # check status
+    started = false
+    invoke_command 'status workers' do |channel,stream,data|
+      started = (data =~ %r{start})
+    end
+    if(started)
+      invoke_command 'stop workers', via: 'sudo'
+    end
+  end
+
+  desc 'Start sidekiq'
+  task 'start', :roles => :app do
+    stopped = false
+    invoke_command 'status workers' do |channel,stream,data|
+      stopped = (data =~ %r{stop})
+    end
+    if(stopped)
+      invoke_command 'start workers', via: 'sudo'
+    end
+  end
+
+  desc 'Restart sidekiq'
+  task 'restart', :roles => :app do
+    stop
+    start
+  end
 end
