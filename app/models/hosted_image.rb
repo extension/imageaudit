@@ -120,7 +120,7 @@ class HostedImage < ActiveRecord::Base
 
   def filesys_path
     if(self.source == 'copwiki')
-      "#{Rails.root}/public/drupalfiles/files/w#{self.path}"
+      "#{Settings.drupal_file_source_path}/w#{self.path}"
     else
       ''
     end
