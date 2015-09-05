@@ -11,12 +11,14 @@
     <p><small>Community copyright review from <%= @image_audit.community_reviewer.fullname -%></small></p>
     <p>
       <%= link_to('Copyright incomplete',change_communityreview_image_path({id: @image.id, community_reviewed: 'no'}), :class => "btn btn-warning btn-sm", :remote => true, :method => :post) -%>
+      <%= link_to('Clear review',change_communityreview_image_path({id: @image.id, community_reviewed: 'clear'}), :class => "btn btn-link btn-sm", :remote => true, :method => :post) -%>
     </p>
   <%- else -%>
     <p><strong>Community Review:</strong> <span class="label label-warning">Copyright incomplete</span></p>
     <p><small>Community copyright review from <%= @image_audit.community_reviewer.fullname -%></small></p>
     <p>
     <%= link_to('Copyright complete',change_communityreview_image_path({id: @image.id, community_reviewed: 'yes'}), :class => "btn btn-success btn-sm", :remote => true, :method => :post) -%>
+    <%= link_to('Clear review',change_communityreview_image_path({id: @image.id, community_reviewed: 'clear'}), :class => "btn btn-link btn-sm", :remote => true, :method => :post) -%>
     </p>
   <%- end -%>
 </div>

@@ -10,12 +10,14 @@
     <p><small>Stock image review from <%= @image_audit.is_stock_reviewer.fullname -%></small></p>
     <p>
     <%= link_to('Not a Stock Image',change_stock_image_path({id: @image.id, is_stock: 'no'}), :class => "btn btn-success btn-sm", :remote => true, :method => :post) -%>
+    <%= link_to('Clear review',change_stock_image_path({id: @image.id, is_stock: 'clear'}), :class => "btn btn-link btn-sm", :remote => true, :method => :post) -%>
     </p>
   <%- else -%>
     <p><strong>Stock Image:</strong> <span class="label label-success">NO</span></p>
     <p><small>Stock image review from <%= @image_audit.is_stock_reviewer.fullname -%></small></p>
     <p>
     <%= link_to('Stock Image',change_stock_image_path({id: @image.id, is_stock: 'yes'}), :class => "btn btn-warning btn-sm", :remote => true, :method => :post) -%>
+    <%= link_to('Clear review',change_stock_image_path({id: @image.id, is_stock: 'clear'}), :class => "btn btn-link btn-sm", :remote => true, :method => :post) -%>
     </p>
   <%- end -%>
 </div>

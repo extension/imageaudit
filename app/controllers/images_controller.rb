@@ -107,14 +107,23 @@ class ImagesController < ApplicationController
     @image = HostedImage.find(params[:id])
     @image_audit = @image.hosted_image_audit
     if(!params[:community_reviewed].nil?)
-      previous_value = @image_audit.community_reviewed?
-      community_reviewed = TRUE_VALUES.include?(params[:community_reviewed])
-      @image_audit.update_attributes({community_reviewed: community_reviewed, community_reviewed_by: @currentcontributor.id})
-      AuditLog.create(contributor: @currentcontributor,
-                      auditable: @image_audit,
-                      changed_item: 'community_reviewed',
-                      previous_check_value: previous_value,
-                      current_check_value: @image_audit.community_reviewed?)
+      previous_value = @image_audit.community_reviewed
+      if(params[:community_reviewed] == 'clear')
+        @image_audit.update_attributes({community_reviewed: nil, community_reviewed: nil})
+        AuditLog.create(contributor: @currentcontributor,
+                        auditable: @image_audit,
+                        changed_item: 'community_reviewed',
+                        previous_check_value: previous_value,
+                        current_check_value: nil)
+      else
+        community_reviewed = TRUE_VALUES.include?(params[:community_reviewed])
+        @image_audit.update_attributes({community_reviewed: community_reviewed, community_reviewed_by: @currentcontributor.id})
+        AuditLog.create(contributor: @currentcontributor,
+                        auditable: @image_audit,
+                        changed_item: 'community_reviewed',
+                        previous_check_value: previous_value,
+                        current_check_value: @image_audit.community_reviewed?)
+      end
     end
   end
 
@@ -122,14 +131,23 @@ class ImagesController < ApplicationController
     @image = HostedImage.find(params[:id])
     @image_audit = @image.hosted_image_audit
     if(!params[:staff_reviewed].nil?)
-      previous_value = @image_audit.staff_reviewed?
-      staff_reviewed = TRUE_VALUES.include?(params[:staff_reviewed])
-      @image_audit.update_attributes({staff_reviewed: staff_reviewed, staff_reviewed_by: @currentcontributor.id})
-      AuditLog.create(contributor: @currentcontributor,
-                      auditable: @image_audit,
-                      changed_item: 'staff_reviewed',
-                      previous_check_value: previous_value,
-                      current_check_value: @image_audit.staff_reviewed?)
+      previous_value = @image_audit.staff_reviewed
+      if(params[:staff_reviewed] == 'clear')
+        @image_audit.update_attributes({staff_reviewed: nil, staff_reviewed_by: nil})
+        AuditLog.create(contributor: @currentcontributor,
+                        auditable: @image_audit,
+                        changed_item: 'staff_reviewed',
+                        previous_check_value: previous_value,
+                        current_check_value: nil)
+      else
+        staff_reviewed = TRUE_VALUES.include?(params[:staff_reviewed])
+        @image_audit.update_attributes({staff_reviewed: staff_reviewed, staff_reviewed_by: @currentcontributor.id})
+        AuditLog.create(contributor: @currentcontributor,
+                        auditable: @image_audit,
+                        changed_item: 'staff_reviewed',
+                        previous_check_value: previous_value,
+                        current_check_value: @image_audit.staff_reviewed?)
+      end
     end
   end
 
@@ -139,13 +157,23 @@ class ImagesController < ApplicationController
     @image_audit = @image.hosted_image_audit
     if(!params[:is_stock].nil?)
       previous_value = @image_audit.is_stock
-      is_stock = TRUE_VALUES.include?(params[:is_stock])
-      @image_audit.update_attributes({is_stock: is_stock, is_stock_by: @currentcontributor.id})
-      AuditLog.create(contributor: @currentcontributor,
-                      auditable: @image_audit,
-                      changed_item: 'is_stock',
-                      previous_check_value: previous_value,
-                      current_check_value: @image_audit.is_stock)
+      if(params[:is_stock] == 'clear')
+        @image_audit.update_attributes({is_stock: nil, is_stock_by: nil})
+        AuditLog.create(contributor: @currentcontributor,
+                        auditable: @image_audit,
+                        changed_item: 'is_stock',
+                        previous_check_value: previous_value,
+                        current_check_value: nil)
+      else
+        is_stock = TRUE_VALUES.include?(params[:is_stock])
+        @image_audit.update_attributes({is_stock: is_stock, is_stock_by: @currentcontributor.id})
+        AuditLog.create(contributor: @currentcontributor,
+                        auditable: @image_audit,
+                        changed_item: 'is_stock',
+                        previous_check_value: previous_value,
+                        current_check_value: @image_audit.is_stock)
+      end
+
     end
   end
 

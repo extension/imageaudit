@@ -11,12 +11,14 @@
     <p><small>Staff copyright review from <%= @image_audit.staff_reviewer.fullname -%></small></p>
     <p>
       <%= link_to('Copyright incomplete',change_staffreview_image_path({id: @image.id, staff_reviewed: 'no'}), :class => "btn btn-warning btn-sm", :remote => true, :method => :post) -%>
+      <%= link_to('Clear review',change_staffreview_image_path({id: @image.id, staff_reviewed: 'clear'}), :class => "btn btn-link btn-sm", :remote => true, :method => :post) -%>
     </p>
   <%- else -%>
     <p><strong>Staff Review:</strong> <span class="label label-warning">Copyright incomplete</span></p>
     <p><small>Staff copyright review from <%= @image_audit.staff_reviewer.fullname -%></small></p>
     <p>
     <%= link_to('Copyright complete',change_staffreview_image_path({id: @image.id, staff_reviewed: 'yes'}), :class => "btn btn-success btn-sm", :remote => true, :method => :post) -%>
+    <%= link_to('Clear review',change_staffreview_image_path({id: @image.id, staff_reviewed: 'clear'}), :class => "btn btn-link btn-sm", :remote => true, :method => :post) -%>
     </p>
   <%- end -%>
 </div>
