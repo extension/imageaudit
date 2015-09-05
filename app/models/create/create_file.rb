@@ -25,8 +25,8 @@ class CreateFile < ActiveRecord::Base
 
     # new target file
     target_filename = "copwiki_#{hosted_image.filename}"
-    target_filsys_path =  "#{Rails.root}/public/drupalfiles/files/#{target_filename}"
-    return nil if File.exists?(target_filsys_path)
+    file_move_target = "#{Settings.drupal_file_source_path}/#{target_filename}"
+    return nil if File.exists?(file_move_target)
 
     # move the file, symlink the old file
     file_move_target = "#{Settings.drupal_file_source_path}/#{target_filename}"
