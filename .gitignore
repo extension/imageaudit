@@ -13,6 +13,7 @@
 /public/system
 /public/sitemaps
 /public/mediawiki
+/public/drupalfiles
 
 # configuration
 /config/database.yml

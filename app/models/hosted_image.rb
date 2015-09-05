@@ -120,7 +120,7 @@ class HostedImage < ActiveRecord::Base
 
   def filesys_path
     if(self.source == 'copwiki')
-      "#{Rails.root}/public/mediawiki/files#{self.path}"
+      "#{Rails.root}/public/drupalfiles/files/w#{self.path}"
     else
       ''
     end
@@ -198,22 +198,22 @@ class HostedImage < ActiveRecord::Base
                             previous_notes: previous_copyright,
                             current_notes: create_copyright)
 
-            if(!image_audit.community_reviewed.nil? and image_audit.community_reviewed?)
+            if(!image_audit.community_reviewed.nil?)
               image_audit.update_attributes({:community_reviewed => nil, :community_reviewed_by => nil})
               AuditLog.create(contributor_id: 1,
                               auditable: image_audit,
                               changed_item: 'community_reviewed',
-                              previous_check_value: true,
-                              current_check_value: false)
+                              previous_check_value: image_audit.community_reviewed?,
+                              current_check_value: nil)
             end
 
-            if(!image_audit.staff_reviewed.nil? and image_audit.staff_reviewed?)
+            if(!image_audit.staff_reviewed.nil?)
               image_audit.update_attributes({:staff_reviewed => nil, :staff_reviewed_by => nil})
               AuditLog.create(contributor_id: 1,
                               auditable: image_audit,
                               changed_item: 'staff_reviewed',
-                              previous_check_value: true,
-                              current_check_value: false)
+                              previous_check_value: image_audit.staff_reviewed?,
+                              current_check_value: nil)
             end
           end
         end
@@ -229,7 +229,11 @@ class HostedImage < ActiveRecord::Base
         # somehow there are /a/aa/filename/some_other_file_name paths
         matchpath_breakdown = matchpath.split('/')
         searchpath = "/#{matchpath_breakdown[1]}/#{matchpath_breakdown[2]}/#{matchpath_breakdown[3]}"
-        if(id = self.where(path: searchpath).where(source: 'copwiki').first)
+        id = self.where(original_path: searchpath).where(original_wiki: true).first
+        if(id.nil?)
+          id = self.where(path: searchpath).where(source: 'copwiki').first
+        end
+        if(id)
           begin
             id.hosted_image_links.create(link_id: link_id)
           rescue ActiveRecord::RecordNotUnique
