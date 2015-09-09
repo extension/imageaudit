@@ -10,10 +10,7 @@ require 'csv'
 class PagesController < ApplicationController
 
   def show
-    @page = Page.includes(:page_stat).find_by_id(params[:id])
-    if(@page.nil?)
-      return do_404
-    end
+    @page = Page.includes(:page_stat).find(params[:id])
     @stats = @page.page_stat
     if(!@page_audit = @page.page_audit)
       @page_audit = @page.create_page_audit
