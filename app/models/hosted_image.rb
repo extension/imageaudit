@@ -48,74 +48,90 @@ class HostedImage < ActiveRecord::Base
     joins(:hosted_image_links).uniq
   end
 
-  def self.published_count
-    joins(:hosted_image_links).count('distinct hosted_image_links.hosted_image_id')
-  end
-
   # viewed
-
-  def self.viewed
-    joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
-  end
-
-  def self.viewed_stock
-    joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 1').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
-  end
-
-  def self.viewed_not_stock
-    joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 0').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
-  end
-
-  def self.viewed_unreviewed_stock
-    stock = self.viewed_stock.pluck('hosted_images.id')
-    not_stock = self.viewed_not_stock.pluck('hosted_images.id')
-    reviewed = stock+not_stock
-    if(!reviewed.blank?)
-      self.viewed.where('hosted_images.id NOT IN (?)',reviewed)
+  def self.viewed(viewed = true)
+    if(viewed)
+      joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
     else
-      self.viewed
+      joins(:page_stats).where("page_stats.mean_unique_pageviews < 1").uniq
     end
   end
 
-
-  def self.viewed_count
-    joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct hosted_images.id")
+  def self.keep(keep = true)
+    joins(:page_audits).where("page_audits.keep_published = ?",keep).uniq
   end
 
-  def self.viewed_stock_count
-    joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 1').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct hosted_images.id")
+  def self.stock(stock = 'All')
+    case stock.capitalize
+    when 'All'
+      where('true')
+    when 'Reviewed'
+      joins(:hosted_image_audit).where('hosted_image_audits.is_stock IN (1,0)')
+    when 'Unreviewed'
+      reviewed = self.stock('Reviewed').pluck('hosted_images.id')
+      if(!reviewed.blank?)
+        where('hosted_images.id NOT IN (?)',reviewed)
+      else
+        where('true')
+      end
+    when 'Yes'
+      joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 1')
+    when 'No'
+      joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 0')
+    else
+      where('true')
+    end
   end
 
-  def self.viewed_unreviewed_stock_count
-    joins(:hosted_image_audit).where('hosted_image_audits.is_stock IS NULL').joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct hosted_images.id")
+  def self.community_reviewed(community_reviewed = 'All')
+    case community_reviewed.capitalize
+    when 'All'
+      where('true')
+    when 'Reviewed'
+      joins(:hosted_image_audit).where('hosted_image_audits.community_reviewed IN (1,0)')
+    when 'Unreviewed'
+      reviewed = self.community_reviewed('Reviewed').pluck('hosted_images.id')
+      if(!reviewed.blank?)
+        where('hosted_images.id NOT IN (?)',reviewed)
+      else
+        where('true')
+      end
+    when 'Yes'
+      joins(:hosted_image_audit).where('hosted_image_audits.community_reviewed = 1')
+    when 'No'
+      joins(:hosted_image_audit).where('hosted_image_audits.community_reviewed = 0')
+    else
+      where('true')
+    end
   end
+
+  def self.staff_reviewed(staff_reviewed = 'All')
+    case staff_reviewed.capitalize
+    when 'All'
+      where('true')
+    when 'Reviewed'
+      joins(:hosted_image_audit).where('hosted_image_audits.staff_reviewed IN (1,0)')
+    when 'Unreviewed'
+      reviewed = self.staff_reviewed('Reviewed').pluck('hosted_images.id')
+      if(!reviewed.blank?)
+        where('hosted_images.id NOT IN (?)',reviewed)
+      else
+        where('true')
+      end
+    when 'Yes'
+      joins(:hosted_image_audit).where('hosted_image_audits.staff_reviewed = 1')
+    when 'No'
+      joins(:hosted_image_audit).where('hosted_image_audits.staff_reviewed = 0')
+    else
+      where('true')
+    end
+  end
+
 
   # keepers
 
-  def self.keep(options={})
-    keep_published = options[:keep_published].nil? ? true : options[:keep_published]
-    joins(:page_audits).where("page_audits.keep_published = ?",keep_published).uniq
-  end
 
-  def self.keep_stock(options={})
-    keep_published = options[:keep_published].nil? ? true : options[:keep_published]
-    if(options[:is_stock].nil?)
-      is_stock = true
-      joins(:hosted_image_audit).where('hosted_image_audits.is_stock = ?',is_stock).joins(:page_audits).where("page_audits.keep_published = ?",keep_published).uniq
-    elsif(options[:is_stock] == 'unreviewed')
-      stock = joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 1').joins(:page_audits).where("page_audits.keep_published = ?",keep_published).pluck('hosted_images.id')
-      not_stock = joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 0').joins(:page_audits).where("page_audits.keep_published = ?",keep_published).pluck('hosted_images.id')
-      reviewed = stock+not_stock
-      if(!reviewed.blank?)
-        self.keep(:keep_published => keep_published).where('hosted_images.id NOT IN (?)',reviewed)
-      else
-        self.keep(:keep_published => keep_published)
-      end
-    else
-      is_stock = options[:is_stock]
-      joins(:hosted_image_audit).where('hosted_image_audits.is_stock = ?',is_stock).joins(:page_audits).where("page_audits.keep_published = ?",keep_published).uniq
-    end
-  end
+
 
 
   def filesys_path

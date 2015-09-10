@@ -31,48 +31,31 @@ class PagesController < ApplicationController
       page_scope = Page.scoped({})
     end
 
-    if(params[:eligible] and TRUE_VALUES.include?(params[:eligible]))
-      @pagination_params[:eligible] = params[:eligible]
-      @filter_strings << "Eligible pages"
-      @filtered = true
-      page_scope = page_scope.eligible
-    end
 
-    if(params[:viewed] and TRUE_VALUES.include?(params[:viewed]))
-      @pagination_params[:viewed] = params[:viewed]
-      @filter_strings << "Viewed pages"
+    if(@page_status = params[:page_status])
       @filtered = true
-      page_scope = page_scope.viewed.joins(:page_stat).order('mean_unique_pageviews desc')
+      @filter_strings << "Page Status: #{@page_status}"
+      case @page_status
+      when 'All'
+        @filtered = false
+      when 'Eligible'
+        page_scope = page_scope.eligible(true)
+      when 'New'
+        page_scope = page_scope.eligible(false)
+      when 'Viewed'
+        page_scope = page_scope.viewed(true).order('mean_unique_pageviews desc')
+      when 'Unviewed'
+        page_scope = page_scope.viewed(false).order('mean_unique_pageviews asc')
+      when 'Missing'
+        page_scope = page_scope.missing
+      when 'Keep'
+        page_scope = page_scope.keep(true).joins(:page_stat).order('mean_unique_pageviews desc')
+      when 'Unpublish'
+        page_scope = page_scope.keep(false).joins(:page_stat).order('mean_unique_pageviews asc')
+      else
+        @filtered = false
+      end
     end
-
-    if(params[:unviewed] and TRUE_VALUES.include?(params[:unviewed]))
-      @pagination_params[:unviewed] = params[:unviewed]
-      @filter_strings << "Unviewed pages"
-      @filtered = true
-      page_scope = page_scope.unviewed.joins(:page_stat).order('mean_unique_pageviews asc')
-    end
-
-    if(params[:missing] and TRUE_VALUES.include?(params[:missing]))
-      @pagination_params[:missing] = params[:missing]
-      @filter_strings << "Missing pages"
-      @filtered = true
-      page_scope = page_scope.missing
-    end
-
-    if(params[:keep] and TRUE_VALUES.include?(params[:keep]))
-      @pagination_params[:keep] = params[:keep]
-      @filter_strings << "Pages to Keep"
-      @filtered = true
-      page_scope = page_scope.keep.joins(:page_stat).order('mean_unique_pageviews desc')
-    end
-
-    if(params[:unpublish] and TRUE_VALUES.include?(params[:unpublish]))
-      @pagination_params[:unpublish] = params[:unpublish]
-      @filter_strings << "Pages to unpublish"
-      @filtered = true
-      page_scope = page_scope.unpublish.joins(:page_stat).order('mean_unique_pageviews asc')
-    end
-
 
     if(!params[:download].nil? and params[:download] == 'csv')
       @page_title_display = "pagelist-"

@@ -1,7 +1,20 @@
+<div class="page-header">
 <h1>Images</h1>
-<%- if @filter_strings -%>
+<%- if !@filter_strings.blank? -%>
 <p>Filtered by: <%= @filter_strings.join(' | ') -%></p>
 <%- end -%>
+<p>
+  <%= link_to("<i class='fa fa-search'></i> Filter this list".html_safe,
+              '#',
+              id: 'formtoggler',
+              class: 'btn btn-default',
+              data: {toggle: 'collapse', target: '#showform'}) %>
+</p>
+<div id="showform" class="<%= (@showform ? 'collapse in' : 'collapse') -%>">
+  <%= render(:partial => 'images/filter_form') %>
+</div>
+</div>
+
 <div id="paginator_wrapper">
   <%- if @images.length > 0 -%>
     <p class="display_results">Displaying <strong><%= @images.offset_value + 1 %>-<%= @images.offset_value + @images.length %></strong> of <strong><%= @images.total_count %></strong></p>
@@ -71,3 +84,14 @@
     <%- end -%>
     </tbody>
   </table>
+
+  <script type="text/javascript">
+
+  $('#showform').on('show', function () {
+    $('#formtoggler').html("Filter Options <i class='fa fa-caret-down'></i>");
+  });
+
+  $('#showform').on('hide', function () {
+    $('#formtoggler').html("Filter Options <i class='fa fa-caret-right'></i>");
+  });
+  </script>

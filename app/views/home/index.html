@@ -8,7 +8,7 @@
     <tr>
       <td>Keep Pages</td>
       <td style="white-space:nowrap;">
-        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['keep_pages']), pages_path(:keep => 'true')) -%></span>
+        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['keep_pages']), pages_path(:page_status => 'Keep')) -%></span>
         <span class="mednumber">(<%= percentage_display(@summary_data['keep_pages'],@summary_data['total_pages']) -%>)</span>
       </td>
       <td>
@@ -21,7 +21,7 @@
     <tr>
       <td>Unpublish Pages</td>
       <td style="white-space:nowrap;">
-        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['total_pages'] - @summary_data['keep_pages']) ), pages_path(:unpublish => 'true')) -%></span>
+        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['total_pages'] - @summary_data['keep_pages']) ), pages_path(:page_status => 'Unpublish')) -%></span>
         <span class="mednumber">(<%= percentage_display((@summary_data['total_pages'] - @summary_data['keep_pages']),@summary_data['total_pages']) -%>)</span>
       </td>
       <td>
@@ -34,7 +34,7 @@
     <tr>
       <td>Kept Hosted Images</td>
       <td>
-        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['keep_hosted_images']), images_path(:keep => 'true')) -%></span><br/>
+        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['keep_hosted_images']), images_path(:page_status => 'Keep')) -%></span><br/>
       </td>
       <td>
         <em>Images uploaded to either the legacy cop.extension.org cms or the create.extension.org cms that are linked to within <strong>pages to keep</strong></em>
@@ -43,7 +43,7 @@
     <tr>
       <td>Kept Hosted Images - Stock</td>
       <td>
-        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['keep_stock_images']), images_path(:keep_stock => 'true')) -%></span><br/>
+        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['keep_stock_images']), images_path(:page_status => 'Keep', :stock => 'Yes')) -%></span><br/>
       </td>
       <td>
         <em>Images on <strong>pages to keep</strong> that have been reviewed as <strong>a stock image</strong> by eXtension Core Team members or the Community </em>
@@ -52,7 +52,7 @@
     <tr>
       <td>Kept Hosted Images - Not Stock</td>
       <td>
-        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['keep_not_stock_images']), images_path(:keep_stock => 'false')) -%></span><br/>
+        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['keep_not_stock_images']), images_path(:page_status => 'Keep', :stock => 'No')) -%></span><br/>
       </td>
       <td>
         <em>Images on <strong>pages to keep</strong> that have been reviewed as <strong>not a stock image</strong> by eXtension Core Team members or the Community </em>
@@ -61,7 +61,7 @@
     <tr>
       <td>Kept Hosted Images - Not Yet Reviewed for Stock</td>
       <td>
-        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['keep_hosted_images'] - (@summary_data['keep_stock_images'] + @summary_data['keep_not_stock_images']))), images_path(:keep_unreviewed_stock => 'true')) -%></span>
+        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['keep_hosted_images'] - (@summary_data['keep_stock_images'] + @summary_data['keep_not_stock_images']))), images_path(:page_status => 'Keep', :stock => 'Unreviewed')) -%></span>
       </td>
       <td>
         <em>Images on <strong>pages to keep</strong> that have <strong>not yet been reviewed</strong> for stock image status by eXtension Core Team members or the Community</em>
@@ -73,13 +73,13 @@
 <table class="table">
     <tr>
       <td>Eligible Pages</td>
-      <td class="mednumber"><%= link_to(number_with_delimiter(@summary_data['eligible_pages']), pages_path(:eligible => 'true')) -%></td>
+      <td class="mednumber"><%= link_to(number_with_delimiter(@summary_data['eligible_pages']), pages_path(:page_status => 'Eligible')) -%></td>
       <td><em>Pages published for at least 1 week prior to <%= PageStat::END_DATE -%></em></td>
     </tr>
     <tr>
       <td>Viewed Pages</td>
       <td style="white-space:nowrap;">
-        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['viewed_pages']), pages_path(:viewed => 'true')) -%></span>
+        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['viewed_pages']), pages_path(:page_status => 'Viewed')) -%></span>
         <span class="mednumber">(<%= percentage_display(@summary_data['viewed_pages'],@summary_data['eligible_pages']) -%>)</span>
       </td>
       <td><em>Pages with <strong>at least one or more</strong> mean unique pageviews per week<br/>between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%></em></td>
@@ -87,31 +87,13 @@
     <tr>
       <td>Unviewed Pages</td>
       <td style="white-space:nowrap;">
-        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['eligible_pages'] - @summary_data['viewed_pages']) ), pages_path(:unviewed => 'true')) -%></span>
+        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['eligible_pages'] - @summary_data['viewed_pages']) ), pages_path(:page_status => 'Unviewed')) -%></span>
         <span class="mednumber">(<%= percentage_display((@summary_data['eligible_pages'] - @summary_data['viewed_pages']),@summary_data['eligible_pages']) -%>)</span>
       </td>
       <td>
         <em>Pages with <strong>less than one</strong> mean unique pageview per week<br/>
         between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%></em>
       </td>
-    </tr>
-    <tr>
-      <td>Viewed Page Percentiles</td>
-      <td>
-        <table class="table">
-        <%- PageStat::PERCENTILES.each_with_index do |percentile, index| -%>
-          <tr>
-          <td class='mednumber'>
-            <%= "#{percentile}th"  -%>
-          </td>
-          <td class='mednumber'>
-            <%= number_with_precision(@summary_data['viewed_percentiles'][index], precision: 1) -%>
-          <td>
-          </tr>
-        <%- end -%>
-        </table>
-      </td>
-      <td><em>Percentiles (NIST standard) of mean unique pageviews per week<br/>between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%></em></td>
     </tr>
     <tr>
       <td>Image Links</td>
@@ -132,7 +114,6 @@
       </td>
     </tr>
 </table>
-
 <h1>Communities</h1>
 <table class="table table-striped">
   <thead>

@@ -22,63 +22,63 @@ class ImagesController < ApplicationController
       image_scope = HostedImage.scoped({})
     end
 
-    # viewed, keep, keep_stock are mutually exclusive
-    if(params[:viewed] and TRUE_VALUES.include?(params[:viewed]))
-      @pagination_params[:viewed] = params[:viewed]
-      @filter_strings << "Viewed images only"
+
+    if(@page_status = params[:page_status])
       @filtered = true
-      if(@community)
-        image_scope = @community.viewed_images.viewed
+      @filter_strings << "Page Status: #{@page_status}"
+      case @page_status
+      when 'All'
+        @filtered = false
+        image_scope = (@community.nil? ? HostedImage.scoped({}) : @community.hosted_images)
+      when 'Viewed'
+        image_scope = (@community.nil? ? HostedImage.viewed(true) : @community.viewed_images.viewed(true))
+      when 'Unviewed'
+        image_scope = (@community.nil? ? HostedImage.viewed(false) : @community.viewed_images.viewed(false))
+      when 'Keep'
+        image_scope = (@community.nil? ? HostedImage.keep(true) : @community.keep_images.keep(true))
+      when 'Unpublish'
+        image_scope = (@community.nil? ? HostedImage.keep(false) : @community.keep_images.keep(false))
       else
-        image_scope = HostedImage.viewed
+        @filtered = false
+        image_scope = (@community.nil? ? HostedImage.scoped({}) : @community.hosted_images)
       end
     end
 
-    if(params[:keep] and TRUE_VALUES.include?(params[:keep]))
-      @pagination_params[:keep] = params[:keep]
-      @filter_strings << "Kept images only"
-      @filtered = true
-      if(@community)
-        image_scope = @community.keep_images.keep
-      else
-        image_scope = HostedImage.keep
+
+    if(@stock = params[:stock])
+      if(TRUE_VALUES.include?(params[:stock]))
+        @stock = 'Yes'
+      elsif(FALSE_VALUES.include?(params[:stock]))
+        @stock = 'No'
       end
+      @pagination_params[:stock] = @stock
+      @filter_strings << "Stock status: #{@stock}"
+      @filtered = true
+      image_scope = image_scope.stock(@stock)
     end
 
-    if(params[:keep_stock] and TRUE_VALUES.include?(params[:keep_stock]))
-      @pagination_params[:keep_stock] = params[:keep_stock]
-      @filter_strings << "Kept images only"
-      @filter_strings << "Stock images"
-      @filtered = true
-      if(@community)
-        image_scope = @community.keep_images.keep_stock
-      else
-        image_scope = HostedImage.keep_stock
+    if(@community_reviewed = params[:community_reviewed])
+      if(TRUE_VALUES.include?(params[:community_reviewed]))
+        @community_reviewed = 'Yes'
+      elsif(FALSE_VALUES.include?(params[:community_reviewed]))
+        @community_reviewed = 'No'
       end
+      @pagination_params[:community_reviewed] = @community_reviewed
+      @filter_strings << "Community copyright review status: #{@community_reviewed}"
+      @filtered = true
+      image_scope = image_scope.community_reviewed(@community_reviewed)
     end
 
-    if(params[:keep_stock] and FALSE_VALUES.include?(params[:keep_stock]))
-      @pagination_params[:keep_stock] = params[:keep_stock]
-      @filter_strings << "Kept images only"
-      @filter_strings << "Non-Stock images"
-      @filtered = true
-      if(@community)
-        image_scope = @community.keep_images.keep_stock(:is_stock => false)
-      else
-        image_scope = HostedImage.keep_stock(:is_stock => false)
+    if(@staff_reviewed = params[:staff_reviewed])
+      if(TRUE_VALUES.include?(params[:staff_reviewed]))
+        @staff_reviewed = 'Yes'
+      elsif(FALSE_VALUES.include?(params[:staff_reviewed]))
+        @staff_reviewed = 'No'
       end
-    end
-
-    if(params[:keep_unreviewed_stock] and TRUE_VALUES.include?(params[:keep_unreviewed_stock]))
-      @pagination_params[:keep_unreviewed_stock] = params[:keep_unreviewed_stock]
-      @filter_strings << "Kept images only"
-      @filter_strings << "Not yet reviewed for Stock"
+      @pagination_params[:staff_reviewed] = @staff_reviewed
+      @filter_strings << "Staff copyright review status: #{@staff_reviewed}"
       @filtered = true
-      if(@community)
-        image_scope = @community.keep_images.keep_stock({is_stock: 'unreviewed'})
-      else
-        image_scope = HostedImage.keep_stock({is_stock: 'unreviewed'})
-      end
+      image_scope = image_scope.staff_reviewed(@staff_reviewed)
     end
 
     if(params[:copyright] and TRUE_VALUES.include?(params[:copyright]))
@@ -87,7 +87,6 @@ class ImagesController < ApplicationController
       @filtered = true
       image_scope = image_scope.with_copyright
     end
-
 
     if(@community.nil? and !@filtered)
       image_scope = image_scope.linked

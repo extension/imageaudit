@@ -7,7 +7,6 @@
 
 class Page < ActiveRecord::Base
   include CacheTools
-  include MarkupScrubber
   has_many :year_analytics
   has_many :page_taggings
   has_many :tags, :through => :page_taggings
@@ -32,14 +31,33 @@ class Page < ActiveRecord::Base
   scope :created_since, lambda{|date| where("#{self.table_name}.created_at >= ?",date)}
   scope :from_create, where(:source => 'create')
 
-  scope :eligible, -> {joins(:page_stat).where("page_stats.weeks_published > 0")}
-  scope :viewed, -> {joins(:page_stat).where("page_stats.weeks_published > 0").where("page_stats.mean_unique_pageviews >= 1")}
-  scope :unviewed, -> {joins(:page_stat).where("page_stats.weeks_published > 0").where("page_stats.mean_unique_pageviews < 1")}
-  scope :missing, -> {joins(:page_stat).where("page_stats.weeks_published > 0").where("page_stats.mean_unique_pageviews = 0")}
+  def self.eligible(flag = true)
+    if(flag)
+      joins(:page_stat).where("page_stats.weeks_published > 0")
+    else
+      joins(:page_stat).where("page_stats.weeks_published = 0")
+    end
+  end
 
-  scope :keep, -> {joins(:page_audit).where("page_audits.keep_published = 1")}
-  scope :unpublish, -> {joins(:page_audit).where("page_audits.keep_published = 0")}
+  def self.viewed(flag = true)
+    if(flag)
+      eligible.where("page_stats.mean_unique_pageviews >= 1")
+    else
+      eligible.where("page_stats.mean_unique_pageviews < 1")
+    end
+  end
 
+  def self.missing
+    eligible.where("page_stats.mean_unique_pageviews = 0")
+  end
+
+  def self.keep(flag = true)
+    if(flag)
+      joins(:page_audit).where("page_audits.keep_published = 1")
+    else
+      joins(:page_audit).where("page_audits.keep_published = 0")
+    end
+  end
 
   def display_title(options = {})
     truncate_it = options[:truncate].nil? ? true : options[:truncate]

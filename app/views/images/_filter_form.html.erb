@@ -1,0 +1,63 @@
+<div class="row">
+  <div class="col-md-12">
+  <div class="well">
+    <%= form_tag(images_path, class: 'form-horizontal', :method => :get) do -%>
+      <%- if @community -%>
+        <%= hidden_field_tag(:community_id, @community.id) -%>
+      <%- end -%>
+
+      <div class="form-group">
+        <div class="col-md-offset-1 col-md-8">
+          <legend>Filter list by:</legend>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <%= label_tag('page_status', 'Containing Page(s) Status', :class => 'col-md-3 control-label') -%>
+        <div class="col-md-2">
+          <%= select_tag("page_status",options_for_select([ "All", "Keep","Unpublish","Viewed","Unviewed"], @page_status || "All"), class: 'form-control' ) -%>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <%= label_tag('stock', 'Stock Photo Status', :class => 'col-md-3 control-label') -%>
+        <div class="col-md-2">
+          <%= select_tag("stock",options_for_select([ "All", "Reviewed","Unreviewed","Yes","No"], @stock || "All"), class: 'form-control' ) -%>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <%= label_tag('community_reviewed', 'Copyright reviewed by community', :class => 'col-md-3 control-label') -%>
+        <div class="col-md-2">
+          <%= select_tag("community_reviewed",options_for_select([ "All", "Reviewed","Unreviewed","Yes","No"], @community_reviewed || "All"), class: 'form-control' ) -%>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <%= label_tag('staff_reviewed', 'Copyright reviewed by staff', :class => 'col-md-3 control-label') -%>
+        <div class="col-md-2">
+          <%= select_tag("staff_reviewed",options_for_select([ "All", "Reviewed","Unreviewed","Yes","No"], @staff_reviewed || "All"), class: 'form-control' ) -%>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="col-md-offset-3 col-md-8">
+          <p>
+            <%= submit_tag "Apply Filter", :name => nil, :class => "btn btn-default btn-primary" %>
+            <%= link_to "cancel", '#', :class => "btn btn-default", :id => 'cancel_button' %>
+          </p>
+        </div>
+      </div>
+
+    <%- end # end form -%>
+  </div>
+  </div>
+</div>
+
+<script class="code" type="text/javascript">
+
+    $('#cancel_button').on('click', function () {
+      $('#showform').collapse('hide');
+    });
+
+ </script>
