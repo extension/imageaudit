@@ -58,11 +58,6 @@ class ImagesController < ApplicationController
     end
 
     if(@community_reviewed = params[:community_reviewed])
-      if(TRUE_VALUES.include?(params[:community_reviewed]))
-        @community_reviewed = 'Yes'
-      elsif(FALSE_VALUES.include?(params[:community_reviewed]))
-        @community_reviewed = 'No'
-      end
       @pagination_params[:community_reviewed] = @community_reviewed
       @filter_strings << "Community copyright review status: #{@community_reviewed}"
       @filtered = true
@@ -70,11 +65,6 @@ class ImagesController < ApplicationController
     end
 
     if(@staff_reviewed = params[:staff_reviewed])
-      if(TRUE_VALUES.include?(params[:staff_reviewed]))
-        @staff_reviewed = 'Yes'
-      elsif(FALSE_VALUES.include?(params[:staff_reviewed]))
-        @staff_reviewed = 'No'
-      end
       @pagination_params[:staff_reviewed] = @staff_reviewed
       @filter_strings << "Staff copyright review status: #{@staff_reviewed}"
       @filtered = true

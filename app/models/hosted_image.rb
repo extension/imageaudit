@@ -96,9 +96,9 @@ class HostedImage < ActiveRecord::Base
       else
         where('true')
       end
-    when 'Yes'
+    when 'Complete'
       joins(:hosted_image_audit).where('hosted_image_audits.community_reviewed = 1')
-    when 'No'
+    when 'Incomplete'
       joins(:hosted_image_audit).where('hosted_image_audits.community_reviewed = 0')
     else
       where('true')
@@ -118,9 +118,9 @@ class HostedImage < ActiveRecord::Base
       else
         where('true')
       end
-    when 'Yes'
+    when 'Complete'
       joins(:hosted_image_audit).where('hosted_image_audits.staff_reviewed = 1')
-    when 'No'
+    when 'Incomplete'
       joins(:hosted_image_audit).where('hosted_image_audits.staff_reviewed = 0')
     else
       where('true')

@@ -29,14 +29,14 @@
       <div class="form-group">
         <%= label_tag('community_reviewed', 'Copyright reviewed by community', :class => 'col-md-3 control-label') -%>
         <div class="col-md-2">
-          <%= select_tag("community_reviewed",options_for_select([ "All", "Reviewed","Unreviewed","Yes","No"], @community_reviewed || "All"), class: 'form-control' ) -%>
+          <%= select_tag("community_reviewed",options_for_select([ "All", "Reviewed","Unreviewed","Complete","Incomplete"], @community_reviewed || "All"), class: 'form-control' ) -%>
         </div>
       </div>
 
       <div class="form-group">
         <%= label_tag('staff_reviewed', 'Copyright reviewed by staff', :class => 'col-md-3 control-label') -%>
         <div class="col-md-2">
-          <%= select_tag("staff_reviewed",options_for_select([ "All", "Reviewed","Unreviewed","Yes","No"], @staff_reviewed || "All"), class: 'form-control' ) -%>
+          <%= select_tag("staff_reviewed",options_for_select([ "All", "Reviewed","Unreviewed","Complete","Incomplete"], @staff_reviewed || "All"), class: 'form-control' ) -%>
         </div>
       </div>
 
