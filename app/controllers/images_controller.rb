@@ -71,11 +71,11 @@ class ImagesController < ApplicationController
       image_scope = image_scope.staff_reviewed(@staff_reviewed)
     end
 
-    if(params[:copyright] and TRUE_VALUES.include?(params[:copyright]))
-      @pagination_params[:copyright] = params[:copyright]
-      @filter_strings << "With copyright"
+    if(!params[:copyrightsearch].blank?)
+      @pagination_params[:copyrightsearch] = params[:copyrightsearch]
+      @filter_strings << "Copyright text has following terms: #{params[:copyrightsearch]}"
       @filtered = true
-      image_scope = image_scope.with_copyright
+      image_scope = image_scope.search_copyright_terms(params[:copyrightsearch])
     end
 
     if(@community.nil? and !@filtered)

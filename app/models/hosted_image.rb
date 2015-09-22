@@ -61,6 +61,12 @@ class HostedImage < ActiveRecord::Base
     joins(:page_audits).where("page_audits.keep_published = ?",keep).uniq
   end
 
+  def self.search_copyright_terms(searchstring)
+    terms = searchstring.split(',').map{|t| t.strip}.compact
+    whereclause = terms.map{|t| "copyright LIKE '% #{t} %'"}.join(' OR ')
+    where("#{whereclause}")
+  end
+
   def self.stock(stock = 'All')
     case stock.capitalize
     when 'All'
