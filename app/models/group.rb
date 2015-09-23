@@ -61,13 +61,13 @@ class Group < ActiveRecord::Base
     attributes[:viewed_percentiles] = viewed_percentiles
     attributes[:image_links] = self.links.image.count("distinct links.id")
     attributes[:viewed_image_links] = self.links.image.joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").count("distinct links.id")
-    attributes[:hosted_images] = self.hosted_images.published_count
-    attributes[:viewed_hosted_images] = self.viewed_images.viewed_count
+    attributes[:hosted_images] = self.hosted_images.linked.count
+    attributes[:viewed_hosted_images] = self.viewed_images.viewed.count
     attributes[:keep_pages] = self.pages.keep.count
     attributes[:keep_image_links] = self.keep_links.image.joins(:page_audits).where("page_audits.keep_published = 1").count("distinct links.id")
     attributes[:keep_hosted_images] = self.keep_images.keep.count
-    attributes[:keep_stock_images] = self.keep_images.keep_stock.count
-    attributes[:keep_not_stock_images] = self.keep_images.keep_stock({:is_stock => false}).count
+    attributes[:keep_stock_images] = self.keep_images.keep.stock('Yes').count
+    attributes[:keep_not_stock_images] = self.keep_images.keep.stock('No').count
     attributes
   end
 
