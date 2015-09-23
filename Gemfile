@@ -71,6 +71,9 @@ gem 'mimemagic'
 # breadcrumbs
 gem "breadcrumbs_on_rails"
 
+# html scrubbing
+gem "loofah"
+
 
 group :development do
   # require the powder gem

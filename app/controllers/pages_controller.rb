@@ -158,7 +158,7 @@ class PagesController < ApplicationController
         row << "#{page.groups.publishing.map(&:name).join(',')}"
         row << "#{page.tags.map(&:name).join(',')}"
         if(!page_audit.notes.blank?)
-          row << "#{page_audit.notes.html_to_pretty_text}"
+          row << "#{page_audit.html_to_pretty_text(page_audit.notes)}"
         else
           row << ''
         end
