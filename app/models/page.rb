@@ -227,7 +227,7 @@ class Page < ActiveRecord::Base
 
   def self.rebuild_stats
     # get stat sets
-    unique_pageviews_set = Page.joins(:year_analytics).group('pages.id').sum(:unique_pageviews)
+    unique_pageviews_set = Page.joins(:year_analytics).group('year_analytics.page_id').sum('year_analytics.unique_pageviews')
     image_link_set = Page.joins(:links).where('links.linktype = ?',Link::IMAGE).group('pages.id').count
     hosted_image_set = Page.joins(:hosted_images).group('pages.id').count
     self.find_in_batches(:batch_size => 100) do |page_group|
