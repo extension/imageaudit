@@ -1,6 +1,6 @@
 <div class='image_audit_notes'>
-<%- if(hosted_image_audit.notes.present?) -%>
-  <%= hosted_image_audit.notes.html_safe %>
+<%- if(@image.notes.present?) -%>
+  <%= @image.notes.html_safe %>
 <%- else -%>
     <p><em>No notes provided</em></p>
 <%- end -%>
@@ -12,7 +12,7 @@
 <script class="code" type="text/javascript">
   $('#edit_notes_for_image_<%= @image.id %>').click(function() {
     $('#edit_notes_link_for_image_<%= @image.id %>').hide();
-    $('#notes_for_image_<%= @image.id %>').html('<%= escape_javascript(render(partial: "image_audit_notes_form", locals: {image: @image, hosted_image_audit: @image_audit})) %>');
+    $('#notes_for_image_<%= @image.id %>').html('<%= escape_javascript(render(partial: "image_audit_notes_form", locals: {image: @image})) %>');
  });
 </script>
 </div>

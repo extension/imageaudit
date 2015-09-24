@@ -1,6 +1,6 @@
-<div class='page_audit_notes'>
-<%- if(page_audit.notes.present?) -%>
-  <%= page_audit.notes.html_safe %>
+<div class='page_notes'>
+<%- if(page.notes.present?) -%>
+  <%= page.notes.html_safe %>
 <%- else -%>
     <p><em>No notes provided</em></p>
 <%- end -%>
@@ -12,7 +12,7 @@
 <script class="code" type="text/javascript">
   $('#edit_notes_for_page_<%= @page.id %>').click(function() {
     $('#edit_notes_link_for_page_<%= @page.id %>').hide();
-    $('#notes_for_page_<%= @page.id %>').html('<%= escape_javascript(render(partial: "page_audit_notes_form", locals: {page: @page, page_audit: @page_audit})) %>');
+    $('#notes_for_page_<%= @page.id %>').html('<%= escape_javascript(render(partial: "page_audit_notes_form", locals: {page: @page})) %>');
  });
 </script>
 </div>

@@ -1,2 +1,2 @@
-$("#notes_for_page_<%= @page.id %>").html("<%= escape_javascript(render partial: 'page_audit_notes', locals: {page: @page, page_audit: @page_audit}) %>");
+$("#notes_for_page_<%= @page.id %>").html("<%= escape_javascript(render partial: 'page_audit_notes', locals: {page: @page}) %>");
 $('#edit_notes_link_for_page_<%= @page.id %>').show();

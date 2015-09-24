@@ -46,7 +46,7 @@
       </div>
       <div class="panel-body">
         <div id='notes_for_image_<%= @image.id %>'>
-          <%= render(partial: 'image_audit_notes', locals: {image: @image, hosted_image_audit: @image_audit}) %>
+          <%= render(partial: 'image_audit_notes', locals: {image: @image}) %>
         </div>
 
       </div>
@@ -75,8 +75,8 @@
       <tr>
         <td><%= page.id -%> (<%= link_to('details',page_path(page.id)) -%>)</td>
         <td><%= page.title -%> (<%= pageinfo_link(page.id,'page info') -%>)</td>
-        <td><%= number_with_delimiter(page.page_stat.unique_pageviews) -%></td>
-        <td><%= number_with_precision(page.page_stat.mean_unique_pageviews, precision: 2) -%></td>
+        <td><%= number_with_delimiter(page.unique_pageviews) -%></td>
+        <td><%= number_with_precision(page.mean_unique_pageviews, precision: 2) -%></td>
         <td><%= page.source_created_at.to_s -%></td>
         <td><%= page.source_updated_at.to_s -%></td>
       </tr>

@@ -20,27 +20,27 @@ class CommunityPageStat < ActiveRecord::Base
 
   def self.rebuild
     self.connection.execute("TRUNCATE TABLE #{self.table_name};")
-    PageStat.overall_stat_attributes # rebuild all stats
+    Page.overall_stat_attributes # rebuild all stats
 
     # get stat sets
     pages_set = Group.publishing.joins(:pages).group('groups.id').count
-    eligible_pages_set = Group.publishing.joins(:page_stats).where("weeks_published >= ?",1).group("groups.id").count
-    viewed_pages_set = Group.publishing.joins(:page_stats).where("mean_unique_pageviews >= ?",1).group("groups.id").count
-    image_link_set = Group.publishing.joins(:links).where('links.linktype = ?',Link::IMAGE).group('groups.id').count('distinct links.id')
-    viewed_image_link_set = Group.publishing.joins(:viewed_links).where("mean_unique_pageviews >= ?",1).where('links.linktype = ?',Link::IMAGE).group('groups.id').count('distinct links.id')
+    eligible_pages_set = Group.publishing.joins(:pages).where("pages.weeks_published >= ?",1).group("groups.id").count
+    viewed_pages_set = Group.publishing.joins(:pages).where("pages.mean_unique_pageviews >= ?",1).group("groups.id").count
+    image_link_set = Group.publishing.joins(:links => :linkedpages).where('links.linktype = ?',Link::IMAGE).group('groups.id').count('distinct links.id')
+    viewed_image_link_set = Group.publishing.joins(:links => :linkedpages).where("pages.mean_unique_pageviews >= ?",1).where('links.linktype = ?',Link::IMAGE).group('groups.id').count('distinct links.id')
     hosted_image_set = Group.publishing.joins(:hosted_images).group('groups.id').count('distinct hosted_images.id')
-    viewed_hosted_image_set = Group.publishing.joins(:viewed_images).where("mean_unique_pageviews >= ?",1).group('groups.id').count('distinct hosted_images.id')
-    keep_pages_set = Group.publishing.joins(:page_audits).where("page_audits.keep_published = 1").group("groups.id").count
-    keep_image_link_set = Group.publishing.joins(:keep_links).where("page_audits.keep_published = 1").where('links.linktype = ?',Link::IMAGE).group('groups.id').count('distinct links.id')
-    keep_hosted_image_set = Group.publishing.joins(:keep_images).where("page_audits.keep_published = 1").group('groups.id').count('distinct hosted_images.id')
-    keep_stock_image_set = Group.publishing.joins(:keep_images => :hosted_image_audit)
-                                               .where("page_audits.keep_published = 1")
-                                               .where("hosted_image_audits.is_stock = 1")
+    viewed_hosted_image_set = Group.publishing.joins(:paged_images).where("pages.mean_unique_pageviews >= ?",1).group('groups.id').count('distinct hosted_images.id')
+    keep_pages_set = Group.publishing.joins(:pages).where("pages.keep_published = 1").group("groups.id").count
+    keep_image_link_set = Group.publishing.joins(:paged_images).where("pages.keep_published = 1").group('groups.id').count('distinct hosted_images.id')
+    keep_hosted_image_set = Group.publishing.joins(:paged_images).where("pages.keep_published = 1").group('groups.id').count('distinct hosted_images.id')
+    keep_stock_image_set = Group.publishing.joins(:paged_images)
+                                               .where("pages.keep_published = 1")
+                                               .where("hosted_images.is_stock = 1")
                                                .group('groups.id').count('distinct hosted_images.id')
 
-    keep_not_stock_image_set = Group.publishing.joins(:keep_images => :hosted_image_audit)
-                                               .where("page_audits.keep_published = 1")
-                                               .where("hosted_image_audits.is_stock = 0")
+    keep_not_stock_image_set = Group.publishing.joins(:paged_images)
+                                               .where("pages.keep_published = 1")
+                                               .where("hosted_images.is_stock = 0")
                                                .group('groups.id').count('distinct hosted_images.id')
 
 

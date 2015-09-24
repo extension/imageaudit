@@ -7,21 +7,30 @@
 
 class Page < ActiveRecord::Base
   include CacheTools
+  include MarkupScrubber
   has_many :year_analytics
   has_many :page_taggings
   has_many :tags, :through => :page_taggings
-  has_many :groups, :through => :tags
-  has_one  :page_stat, dependent: :destroy
+  has_many :group_pages
+  has_many :groups, :through => :group_pages
   has_many :linkings, dependent: :destroy
   has_many :links, :through => :linkings
-  has_many :hosted_images, :through => :links
-  has_one  :page_audit
+  has_many :page_hosted_images
+  has_many :hosted_images, :through => :page_hosted_images
+
+  belongs_to :keep_published_reviewer,  :class_name => "Contributor", :foreign_key => "keep_published_by"
+  belongs_to :community_reviewer,  :class_name => "Contributor", :foreign_key => "community_reviewed_by"
+  belongs_to :staff_reviewer,      :class_name => "Contributor", :foreign_key => "staff_reviewed_by"
 
 
   # index settings
   NOT_INDEXED = 0
   INDEXED = 1
   NOT_GOOGLE_INDEXED = 2
+
+  # hardcoded right now
+  START_DATE = Date.parse('2014-08-24')
+  END_DATE = Date.parse('2015-08-22')
 
   PERCENTILES = [99,95,90,75,50,25,10]
   DATATYPES = ['Article','Faq']
@@ -31,31 +40,37 @@ class Page < ActiveRecord::Base
   scope :created_since, lambda{|date| where("#{self.table_name}.created_at >= ?",date)}
   scope :from_create, where(:source => 'create')
 
+  scope :eligible_pages, -> {where("weeks_published > 0")}
+  scope :viewed, -> (view_base = 1) {eligible_pages.where("mean_unique_pageviews >= ?",view_base)}
+  scope :unviewed, -> (view_base = 1) {eligible_pages.where("mean_unique_pageviews < ?",view_base)}
+  scope :missing, -> {eligible_pages.where("mean_unique_pageviews = 0")}
+
+
   def self.eligible(flag = true)
     if(flag)
-      joins(:page_stat).where("page_stats.weeks_published > 0")
+      where("weeks_published > 0")
     else
-      joins(:page_stat).where("page_stats.weeks_published = 0")
+    where("weeks_published = 0")
     end
   end
 
   def self.viewed(flag = true)
     if(flag)
-      eligible.where("page_stats.mean_unique_pageviews >= 1")
+      eligible.where("mean_unique_pageviews >= 1")
     else
-      eligible.where("page_stats.mean_unique_pageviews < 1")
+      eligible.where("mean_unique_pageviews < 1")
     end
   end
 
   def self.missing
-    eligible.where("page_stats.mean_unique_pageviews = 0")
+    eligible.where("mean_unique_pageviews = 0")
   end
 
   def self.keep(flag = true)
     if(flag)
-      joins(:page_audit).where("page_audits.keep_published = 1")
+      where("keep_published = 1")
     else
-      joins(:page_audit).where("page_audits.keep_published = 0")
+      where("keep_published = 0")
     end
   end
 
@@ -78,41 +93,36 @@ class Page < ActiveRecord::Base
    self.find_by_title(real_title)
   end
 
-  def self.rebuild
-    self.connection.execute("truncate table #{self.table_name};")
-    ArticlePage.find_in_batches do |group|
-      insert_values = []
-      group.each do |page|
-        insert_list = []
-        insert_list << page.id
-        insert_list << (page.migrated_id.blank? ? 0 : page.migrated_id)
-        insert_list << ActiveRecord::Base.quote_value(page.datatype)
-        insert_list << ActiveRecord::Base.quote_value(page.title)
-        insert_list << ActiveRecord::Base.quote_value(page.url_title)
-        insert_list << (page.content_length.blank? ? 0 : page.content_length)
-        insert_list << (page.content_words.blank? ? 0 : page.content_words)
-        insert_list << ActiveRecord::Base.quote_value(page.source_created_at.to_s(:db))
-        insert_list << ActiveRecord::Base.quote_value(page.source_updated_at.to_s(:db))
-        insert_list << ActiveRecord::Base.quote_value(page.source)
-        insert_list << ActiveRecord::Base.quote_value(page.source_url)
-        insert_list << page.indexed
-        insert_list << (page.is_dpl? ? 1 : 0)
-        if(page.source == 'create' and page.source_url =~ %r{/node/(\d+)})
-          insert_list << $1.to_i
-        else
-          insert_list << 0
-        end
-        insert_list << ActiveRecord::Base.quote_value(page.created_at.to_s(:db))
-        insert_list << ActiveRecord::Base.quote_value(page.updated_at.to_s(:db))
-        insert_values << "(#{insert_list.join(',')})"
-      end
-      insert_sql = "INSERT INTO #{self.table_name} VALUES #{insert_values.join(',')};"
-      self.connection.execute(insert_sql)
-    end
+  def self.update_from_articles
+    article_database = ArticlePage.connection.current_database
+    query = <<-END_SQL.gsub(/\s+/, " ").strip
+    INSERT INTO #{self.connection.current_database}.#{self.table_name} (id, datatype, title, source_created_at, source_updated_at, source, source_url, article_created_at, article_updated_at)
+    SELECT id, datatype, title, source_created_at, source_updated_at, source, source_url, created_at, updated_at
+    FROM #{article_database}.pages
+    ON DUPLICATE KEY UPDATE
+    datatype = #{article_database}.pages.datatype,
+    title = #{article_database}.pages.title,
+    source_created_at = #{article_database}.pages.source_created_at,
+    source_updated_at = #{article_database}.pages.source_updated_at,
+    source = #{article_database}.pages.source,
+    source_url = #{article_database}.pages.source_url,
+    article_created_at = #{article_database}.pages.created_at,
+    article_updated_at = #{article_database}.pages.updated_at
+    END_SQL
+    self.connection.execute(query)
     true
   end
 
-
+  def self.remove_deleted_pages
+    article_database = ArticlePage.connection.current_database
+    page_list = self.joins("LEFT join #{article_database}.pages on #{article_database}.pages.id = #{self.connection.current_database}.#{self.table_name}.id")
+                    .where("#{article_database}.pages.id IS NULL")
+                    .select("#{self.connection.current_database}.#{self.table_name}.*")
+    page_list.each do |p|
+      p.destroy
+    end
+    true
+  end
 
   def self.tag_counts(cache_options= {})
     cache_key = self.get_cache_key(__method__)
@@ -133,7 +143,7 @@ class Page < ActiveRecord::Base
     end
   end
 
-  def weeks_published(through_date = PageStat::END_DATE)
+  def weeks_published(through_date = Page::END_DATE)
     if(self.created_at.to_date > through_date)
       0
     else
@@ -144,7 +154,7 @@ class Page < ActiveRecord::Base
   def page_stat_attributes
     pageviews = self.year_analytics.pluck(:pageviews).sum
     unique_pageviews = self.year_analytics.pluck(:unique_pageviews).sum
-    weeks_published = self.weeks_published(PageStat::END_DATE)
+    weeks_published = self.weeks_published(Page::END_DATE)
     if(weeks_published > 52)
       mean_pageviews = pageviews / 52.to_f
       mean_unique_pageviews = unique_pageviews / 52.to_f
@@ -161,18 +171,101 @@ class Page < ActiveRecord::Base
     attributes[:weeks_published] = weeks_published
     attributes[:mean_unique_pageviews] = mean_unique_pageviews
     attributes[:image_links] = self.links.image.count
-    attributes[:hosted_images] = self.hosted_images.count
+    attributes[:hosted_image_count] = self.hosted_images.count
     attributes
   end
 
-  def self.make_audits
-    without_audit = Page.joins("LEFT JOIN page_audits on page_audits.page_id = pages.id").where("page_audits.id IS NULL")
-    without_audit.each do |page|
-      page.create_page_audit(keep_published: 1, keep_published_by: 1)
+  def self.overall_stat_attributes(rebuild = false)
+    if(!rebuild and cps = CommunityPageStat.where(group_id: 0).first)
+      cps.attributes
+    else
+      total_pages = self.count
+      eligible_pages = self.eligible_pages.count
+      viewed_pages = self.viewed.count
+      viewed_percentiles = self.mup_percentiles
+      keep_pages = Page.keep.count
+
+      attributes = {}
+      attributes[:total_pages] = total_pages
+      attributes[:eligible_pages] = eligible_pages
+      attributes[:viewed_pages] = viewed_pages
+      attributes[:keep_pages] = keep_pages
+
+      attributes[:viewed_percentiles] = viewed_percentiles
+      attributes[:image_links] = Link.image.count("distinct links.id")
+      attributes[:viewed_image_links] = Link.image.joins(:linkedpages).where("mean_unique_pageviews >= 1").count("distinct links.id")
+      attributes[:keep_image_links] = Link.image.joins(:linkedpages).where("keep_published = 1").count("distinct links.id")
+
+      attributes[:hosted_images] = HostedImage.linked.count
+      attributes[:viewed_hosted_images] = HostedImage.viewed.count
+
+      attributes[:keep_hosted_images] = HostedImage.keep.count
+      attributes[:keep_stock_images] = HostedImage.keep.stock('Yes').count
+      attributes[:keep_not_stock_images] = HostedImage.keep.stock('No').count
+
+      if(cps = CommunityPageStat.where(group_id: 0).first)
+        cps.update_attributes(attributes)
+      else
+        cps = CommunityPageStat.create(attributes.merge({:group_id => 0}))
+      end
+      cps.attributes
+    end
+  end
+
+  def self.mup_percentiles
+    mups = self.pluck(:mean_unique_pageviews)
+    viewed_percentiles = []
+    PERCENTILES.each do |percentile|
+      viewed_percentiles << mups.nist_percentile(percentile)
+    end
+    viewed_percentiles
+  end
+
+  def update_stats
+    self.update_attributes(self.page_stat_attributes)
+  end
+
+  def self.rebuild_stats
+    # get stat sets
+    unique_pageviews_set = Page.joins(:year_analytics).group('pages.id').sum(:unique_pageviews)
+    image_link_set = Page.joins(:links).where('links.linktype = ?',Link::IMAGE).group('pages.id').count
+    hosted_image_set = Page.joins(:hosted_images).group('pages.id').count
+    self.find_in_batches(:batch_size => 100) do |page_group|
+      update_statement_set = []
+      page_group.each do |page|
+        weeks_published = page.weeks_published
+        hosted_image_count = (hosted_image_set[page.id].nil? ? 0 : hosted_image_set[page.id])
+        unique_pageviews = (unique_pageviews_set[page.id].nil? ? 0 : unique_pageviews_set[page.id])
+        if(weeks_published > 52)
+          mean_unique_pageviews = ( unique_pageviews / 52.to_f )
+        elsif(weeks_published > 0)
+          mean_unique_pageviews = ( unique_pageviews / weeks_published.to_f )
+        else
+          mean_unique_pageviews = 0
+        end
+        image_links  = (image_link_set[page.id].nil? ? 0 : image_link_set[page.id])
+        # custom build update statement
+        query = <<-END_SQL.gsub(/\s+/, " ").strip
+        UPDATE #{self.table_name}
+        SET
+          unique_pageviews = #{unique_pageviews},
+          hosted_image_count = #{hosted_image_count},
+          weeks_published = #{weeks_published},
+          image_links = #{image_links},
+          mean_unique_pageviews = #{mean_unique_pageviews},
+          updated_at = NOW()
+        WHERE id = #{page.id}
+        END_SQL
+        update_statement_set << query
+      end
+      self.transaction do
+        update_statement_set.each do |statement|
+          self.connection.execute(statement)
+        end
+      end
     end
     true
   end
-
 
 
 end
