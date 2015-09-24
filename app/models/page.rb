@@ -96,8 +96,8 @@ class Page < ActiveRecord::Base
   def self.update_from_articles
     article_database = ArticlePage.connection.current_database
     query = <<-END_SQL.gsub(/\s+/, " ").strip
-    INSERT INTO #{self.connection.current_database}.#{self.table_name} (id, datatype, title, source_created_at, source_updated_at, source, source_url, article_created_at, article_updated_at)
-    SELECT id, datatype, title, source_created_at, source_updated_at, source, source_url, created_at, updated_at
+    INSERT INTO #{self.connection.current_database}.#{self.table_name} (id, datatype, title, source_created_at, source_updated_at, source, source_url, article_created_at, article_updated_at,created_at,updated_at)
+    SELECT id, datatype, title, source_created_at, source_updated_at, source, source_url, created_at, updated_at, NOW(), NOW()
     FROM #{article_database}.pages
     ON DUPLICATE KEY UPDATE
     datatype = #{article_database}.pages.datatype,
@@ -144,10 +144,10 @@ class Page < ActiveRecord::Base
   end
 
   def weeks_published(through_date = Page::END_DATE)
-    if(self.created_at.to_date > through_date)
+    if(self.article_created_at.to_date > through_date)
       0
     else
-      (through_date - self.created_at.to_date).to_i / 7
+      (through_date - self.article_created_at.to_date).to_i / 7
     end
   end
 
