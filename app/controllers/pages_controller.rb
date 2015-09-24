@@ -45,9 +45,9 @@ class PagesController < ApplicationController
       when 'Missing'
         page_scope = page_scope.missing
       when 'Keep'
-        page_scope = page_scope.keep(true).joins(:page_stat).order('mean_unique_pageviews desc')
+        page_scope = page_scope.keep(true).order('mean_unique_pageviews desc')
       when 'Unpublish'
-        page_scope = page_scope.keep(false).joins(:page_stat).order('mean_unique_pageviews asc')
+        page_scope = page_scope.keep(false).order('mean_unique_pageviews asc')
       else
         @filtered = false
       end
