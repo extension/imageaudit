@@ -18,9 +18,7 @@ class AuditLog < ActiveRecord::Base
   def audit_type
     if(self.auditable_type == "HostedImage")
       'Image'
-    elsif(self.auditable_type == "HostedImageAudit")
-      'Image'
-    elsif(self.auditable_type == "PageAudit")
+    elsif(self.auditable_type == "Page")
       'Page'
     else
       self.auditable_type
@@ -43,15 +41,7 @@ class AuditLog < ActiveRecord::Base
   end
 
   def changed_object
-    if(self.auditable_type == 'PageAudit')
-      self.auditable.page
-    elsif(self.auditable_type == 'HostedImageAudit')
-      self.auditable.hosted_image
-    elsif(self.auditable_type == 'HostedImage')
-      self.auditable
-    else
-      self.auditable
-    end
+    self.auditable
   end
 
 

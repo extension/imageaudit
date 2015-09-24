@@ -14,8 +14,8 @@
       <td>
         <p><em>Pages marked by eXtension Core Team members or by the Community <strong>to keep</strong></em></p>
         <p><em>The initial set included</em> viewed pages <em>those with <strong>at least one or more</strong>
-               mean unique pageviews per week between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%>;
-               pages that had been published since <%= PageStat::END_DATE -%>; and pages tagged "bio","homage", or "contents"</em></p>
+               mean unique pageviews per week between <%= Page::START_DATE -%> and <%= Page::END_DATE -%>;
+               pages that had been published since <%= Page::END_DATE -%>; and pages tagged "bio","homage", or "contents"</em></p>
       </td>
     </tr>
     <tr>
@@ -27,7 +27,7 @@
       <td>
         <p><em>Pages marked by eXtension Core Team members or by the Community <strong>to unpublish</strong></em></p>
         <p><em>The initial set included</em> unviewed pages <em>those with <strong>less than one</strong>
-               mean unique pageviews per week between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%>
+               mean unique pageviews per week between <%= Page::START_DATE -%> and <%= Page::END_DATE -%>
                that were not tagged "bio","homage", or "contents"</em></p>
       </td>
     </tr>
@@ -74,7 +74,7 @@
     <tr>
       <td>Eligible Pages</td>
       <td class="mednumber"><%= link_to(number_with_delimiter(@summary_data['eligible_pages']), pages_path(:page_status => 'Eligible')) -%></td>
-      <td><em>Pages published for at least 1 week prior to <%= PageStat::END_DATE -%></em></td>
+      <td><em>Pages published for at least 1 week prior to <%= Page::END_DATE -%></em></td>
     </tr>
     <tr>
       <td>Viewed Pages</td>
@@ -82,7 +82,7 @@
         <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['viewed_pages']), pages_path(:page_status => 'Viewed')) -%></span>
         <span class="mednumber">(<%= percentage_display(@summary_data['viewed_pages'],@summary_data['eligible_pages']) -%>)</span>
       </td>
-      <td><em>Pages with <strong>at least one or more</strong> mean unique pageviews per week<br/>between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%></em></td>
+      <td><em>Pages with <strong>at least one or more</strong> mean unique pageviews per week<br/>between <%= Page::START_DATE -%> and <%= Page::END_DATE -%></em></td>
     </tr>
     <tr>
       <td>Unviewed Pages</td>
@@ -92,7 +92,7 @@
       </td>
       <td>
         <em>Pages with <strong>less than one</strong> mean unique pageview per week<br/>
-        between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%></em>
+        between <%= Page::START_DATE -%> and <%= Page::END_DATE -%></em>
       </td>
     </tr>
     <tr>

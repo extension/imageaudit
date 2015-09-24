@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20150903142335) do
+ActiveRecord::Schema.define(:version => 20150924143949) do
 
   create_table "audit_logs", :force => true do |t|
     t.string   "auditable_type",       :null => false
@@ -77,6 +77,20 @@ ActiveRecord::Schema.define(:version => 20150903142335) do
 
   add_index "contributors", ["openid_uid"], :name => "openid_ndx"
 
+  create_table "group_images", :force => true do |t|
+    t.integer "hosted_image_id", :null => false
+    t.integer "group_id",        :null => false
+  end
+
+  add_index "group_images", ["hosted_image_id", "group_id"], :name => "group_image_ndx", :unique => true
+
+  create_table "group_pages", :force => true do |t|
+    t.integer "page_id",  :null => false
+    t.integer "group_id", :null => false
+  end
+
+  add_index "group_pages", ["page_id", "group_id"], :name => "group_page_ndx", :unique => true
+
   create_table "groups", :force => true do |t|
     t.integer  "create_gid"
     t.string   "name"
@@ -105,7 +119,7 @@ ActiveRecord::Schema.define(:version => 20150903142335) do
 
   create_table "hosted_image_links", :force => true do |t|
     t.integer "link_id",         :null => false
-    t.string  "hosted_image_id", :null => false
+    t.integer "hosted_image_id", :null => false
   end
 
   add_index "hosted_image_links", ["link_id", "hosted_image_id"], :name => "link_index", :unique => true
@@ -121,8 +135,15 @@ ActiveRecord::Schema.define(:version => 20150903142335) do
     t.string   "original_filename"
     t.text     "original_path"
     t.integer  "original_source_id"
-    t.datetime "created_at",         :null => false
-    t.datetime "updated_at",         :null => false
+    t.datetime "created_at",            :null => false
+    t.datetime "updated_at",            :null => false
+    t.boolean  "is_stock"
+    t.integer  "is_stock_by"
+    t.boolean  "community_reviewed"
+    t.integer  "community_reviewed_by"
+    t.boolean  "staff_reviewed"
+    t.integer  "staff_reviewed_by"
+    t.text     "notes"
   end
 
   add_index "hosted_images", ["source_id", "source"], :name => "source_id_index", :unique => true
@@ -179,6 +200,13 @@ ActiveRecord::Schema.define(:version => 20150903142335) do
 
   add_index "page_audits", ["page_id"], :name => "page_ndx", :unique => true
 
+  create_table "page_hosted_images", :force => true do |t|
+    t.integer "page_id",         :null => false
+    t.integer "hosted_image_id", :null => false
+  end
+
+  add_index "page_hosted_images", ["page_id", "hosted_image_id"], :name => "image_page_ndx", :unique => true
+
   create_table "page_stats", :force => true do |t|
     t.integer  "page_id"
     t.integer  "unique_pageviews"
@@ -202,27 +230,32 @@ ActiveRecord::Schema.define(:version => 20150903142335) do
   add_index "page_taggings", ["page_id", "tag_id"], :name => "pt_ndx"
 
   create_table "pages", :force => true do |t|
-    t.integer  "migrated_id"
     t.string   "datatype"
     t.text     "title"
-    t.string   "url_title",         :limit => 101
-    t.integer  "content_length"
-    t.integer  "content_words"
     t.datetime "source_created_at"
     t.datetime "source_updated_at"
     t.string   "source"
     t.text     "source_url"
-    t.integer  "indexed",                          :default => 1
-    t.boolean  "is_dpl",                           :default => false
-    t.integer  "node_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.datetime "article_created_at"
+    t.datetime "article_updated_at"
+    t.boolean  "keep_published"
+    t.integer  "keep_published_by"
+    t.boolean  "community_reviewed"
+    t.integer  "community_reviewed_by"
+    t.boolean  "staff_reviewed"
+    t.integer  "staff_reviewed_by"
+    t.text     "notes"
+    t.integer  "unique_pageviews"
+    t.integer  "weeks_published"
+    t.float    "mean_unique_pageviews"
+    t.integer  "image_links"
+    t.integer  "hosted_image_count"
   end
 
-  add_index "pages", ["created_at", "datatype", "indexed"], :name => "page_type_ndx"
+  add_index "pages", ["created_at", "datatype"], :name => "page_type_ndx"
   add_index "pages", ["datatype"], :name => "index_pages_on_datatype"
-  add_index "pages", ["migrated_id"], :name => "index_pages_on_migrated_id"
-  add_index "pages", ["node_id"], :name => "node_ndx"
   add_index "pages", ["title"], :name => "index_pages_on_title", :length => {"title"=>255}
 
   create_table "rebuilds", :force => true do |t|

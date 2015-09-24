@@ -8,11 +8,11 @@
 class Rebuild < ActiveRecord::Base
   attr_accessible :group, :single_model, :single_action, :in_progress, :started, :finished, :run_time, :current_model, :current_action, :current_start
 
-  ARTICLE_REBUILDS = ['Page',{'Page' => 'make_audits'},'Tag','PageTagging']
+  ARTICLE_REBUILDS = [{'Page' => 'update_from_articles'},{'Page' => 'remove_deleted_pages'},{'Page' => 'rebuild_stats'},'Tag','PageTagging']
   ARTICLE_UPDATES = [{'Link' => 'update_list'},'Linking',{'Link' => 'image_cleanup'}]
   PEOPLE_REBUILDS = ['Group','Contributor','ContributorGroup']
-  IMAGE_UPDATES = [{'HostedImage' => 'update_from_create'},{'HostedImage' => 'update_copyrights'},{'HostedImageLink' => 'update_list'}]
-  INTERNAL_REBUILDS = ['PageStat','CommunityPageStat']
+  IMAGE_UPDATES = [{'HostedImage' => 'update_from_create'},{'HostedImage' => 'update_copyrights'},{'HostedImageLink' => 'update_list'},'PageHostedImage']
+  INTERNAL_REBUILDS = ['GroupPage','GroupImage','CommunityPageStat']
 
   def run_and_log(model,action)
     object = Object.const_get(model)

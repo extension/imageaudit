@@ -9,10 +9,16 @@ class HostedImage < ActiveRecord::Base
   has_many :hosted_image_links
   has_many :links, :through => :hosted_image_links
   has_many :linkings, :through => :links
-  has_many :pages, :through => :linkings
-  has_many :page_stats, :through => :pages
-  has_many :page_audits, :through => :pages
-  has_one  :hosted_image_audit
+  has_many :page_hosted_images
+  has_many :pages, :through => :page_hosted_images
+  has_many :group_images
+  has_many :groups, :through => :group_images
+
+  belongs_to :is_stock_reviewer,  :class_name => "Contributor", :foreign_key => "is_stock_by"
+  belongs_to :community_reviewer,  :class_name => "Contributor", :foreign_key => "community_reviewed_by"
+  belongs_to :staff_reviewer,      :class_name => "Contributor", :foreign_key => "staff_reviewed_by"
+  has_many :audit_logs, :as => :auditable
+
 
   scope :from_copwiki, -> {where(source: 'copwiki')}
   scope :from_create, -> {where(source: 'create')}
@@ -51,14 +57,14 @@ class HostedImage < ActiveRecord::Base
   # viewed
   def self.viewed(viewed = true)
     if(viewed)
-      joins(:page_stats).where("page_stats.mean_unique_pageviews >= 1").uniq
+      joins(:pages).where("pages.mean_unique_pageviews >= 1").uniq
     else
-      joins(:page_stats).where("page_stats.mean_unique_pageviews < 1").uniq
+      joins(:pages).where("pages.mean_unique_pageviews < 1").uniq
     end
   end
 
   def self.keep(keep = true)
-    joins(:page_audits).where("page_audits.keep_published = ?",keep).uniq
+    joins(:pages).where("pages.keep_published = ?",keep).uniq
   end
 
   def self.search_copyright_terms(searchstring)
@@ -72,7 +78,7 @@ class HostedImage < ActiveRecord::Base
     when 'All'
       where('true')
     when 'Reviewed'
-      joins(:hosted_image_audit).where('hosted_image_audits.is_stock IN (1,0)')
+      where('is_stock IN (1,0)')
     when 'Unreviewed'
       reviewed = self.stock('Reviewed').pluck('hosted_images.id')
       if(!reviewed.blank?)
@@ -81,9 +87,9 @@ class HostedImage < ActiveRecord::Base
         where('true')
       end
     when 'Yes'
-      joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 1')
+      where('is_stock = 1')
     when 'No'
-      joins(:hosted_image_audit).where('hosted_image_audits.is_stock = 0')
+      where('is_stock = 0')
     else
       where('true')
     end
@@ -94,7 +100,7 @@ class HostedImage < ActiveRecord::Base
     when 'All'
       where('true')
     when 'Reviewed'
-      joins(:hosted_image_audit).where('hosted_image_audits.community_reviewed IN (1,0)')
+      where('community_reviewed IN (1,0)')
     when 'Unreviewed'
       reviewed = self.community_reviewed('Reviewed').pluck('hosted_images.id')
       if(!reviewed.blank?)
@@ -103,9 +109,9 @@ class HostedImage < ActiveRecord::Base
         where('true')
       end
     when 'Complete'
-      joins(:hosted_image_audit).where('hosted_image_audits.community_reviewed = 1')
+      where('community_reviewed = 1')
     when 'Incomplete'
-      joins(:hosted_image_audit).where('hosted_image_audits.community_reviewed = 0')
+      where('community_reviewed = 0')
     else
       where('true')
     end
@@ -116,7 +122,7 @@ class HostedImage < ActiveRecord::Base
     when 'All'
       where('true')
     when 'Reviewed'
-      joins(:hosted_image_audit).where('hosted_image_audits.staff_reviewed IN (1,0)')
+      where('staff_reviewed IN (1,0)')
     when 'Unreviewed'
       reviewed = self.staff_reviewed('Reviewed').pluck('hosted_images.id')
       if(!reviewed.blank?)
@@ -125,9 +131,9 @@ class HostedImage < ActiveRecord::Base
         where('true')
       end
     when 'Complete'
-      joins(:hosted_image_audit).where('hosted_image_audits.staff_reviewed = 1')
+      where('staff_reviewed = 1')
     when 'Incomplete'
-      joins(:hosted_image_audit).where('hosted_image_audits.staff_reviewed = 0')
+      where('staff_reviewed = 0')
     else
       where('true')
     end
@@ -209,34 +215,29 @@ class HostedImage < ActiveRecord::Base
         if hi.copyright != create_copyright
           previous_copyright = hi.copyright
           hi.update_attribute(:copyright, create_copyright)
-          # clear validation if exists
-          if(!image_audit = hi.hosted_image_audit)
-            image_audit = hi.create_hosted_image_audit
-          else
-            # log copyright change
+          # log copyright change
+          AuditLog.create(contributor_id: 1,
+                          auditable: hi,
+                          changed_item: 'copyright',
+                          previous_notes: previous_copyright,
+                          current_notes: create_copyright)
+
+          if(!hi.community_reviewed.nil?)
+            hi.update_attributes({:community_reviewed => nil, :community_reviewed_by => nil})
             AuditLog.create(contributor_id: 1,
                             auditable: hi,
-                            changed_item: 'copyright',
-                            previous_notes: previous_copyright,
-                            current_notes: create_copyright)
+                            changed_item: 'community_reviewed',
+                            previous_check_value: hi.community_reviewed?,
+                            current_check_value: nil)
+          end
 
-            if(!image_audit.community_reviewed.nil?)
-              image_audit.update_attributes({:community_reviewed => nil, :community_reviewed_by => nil})
-              AuditLog.create(contributor_id: 1,
-                              auditable: image_audit,
-                              changed_item: 'community_reviewed',
-                              previous_check_value: image_audit.community_reviewed?,
-                              current_check_value: nil)
-            end
-
-            if(!image_audit.staff_reviewed.nil?)
-              image_audit.update_attributes({:staff_reviewed => nil, :staff_reviewed_by => nil})
-              AuditLog.create(contributor_id: 1,
-                              auditable: image_audit,
-                              changed_item: 'staff_reviewed',
-                              previous_check_value: image_audit.staff_reviewed?,
-                              current_check_value: nil)
-            end
+          if(!hi.staff_reviewed.nil?)
+            hi.update_attributes({:staff_reviewed => nil, :staff_reviewed_by => nil})
+            AuditLog.create(contributor_id: 1,
+                            auditable: hi,
+                            changed_item: 'staff_reviewed',
+                            previous_check_value: hi.staff_reviewed?,
+                            current_check_value: nil)
           end
         end
       end

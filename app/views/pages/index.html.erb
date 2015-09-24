@@ -41,22 +41,21 @@
   </thead>
   <tbody>
     <%- @pages.each do |page| -%>
-      <%- page_audit = page.page_audit -%>
       <tr>
         <td><%= page.id -%> (<%= link_to('details',page_path(page.id)) -%>)</td>
         <td>
-          <%- if page_audit.keep_published.nil? -%>
+          <%- if page.keep_published.nil? -%>
             <span class="label label-info">not reviewed</span>
-          <%- elsif page_audit.keep_published? -%>
+          <%- elsif page.keep_published? -%>
             <span class="label label-success">Yes</span>
           <%- else -%>
             <span class="label label-warning">No</span>
           <%- end -%>
         </td>
         <td><%= page.title -%> (<%= pageinfo_link(page.id,'page info') -%>)</td>
-        <td><%= number_with_delimiter(page.page_stat.unique_pageviews) -%></td>
-        <td><%= number_with_precision(page.page_stat.mean_unique_pageviews, precision: 2) -%></td>
-        <td> <%= page.page_stat.hosted_images -%></td>
+        <td><%= number_with_delimiter(page.unique_pageviews) -%></td>
+        <td><%= number_with_precision(page.mean_unique_pageviews, precision: 2) -%></td>
+        <td> <%= page.hosted_image_count -%></td>
         <td>
             <%- page.hosted_image_ids.each do |hid| -%>
               <%= link_to("#{hid}",image_path(hid)) -%>,

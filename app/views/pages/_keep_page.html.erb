@@ -1,19 +1,19 @@
 <div class="dashmodule">
-  <%- if @page_audit.keep_published.nil? -%>
+  <%- if @page.keep_published.nil? -%>
     <p><strong>Keep Page Published:</strong> <span class="label label-info">Not Yet Reviewed</span></p>
     <p>
       <%= link_to('Keep page published',change_keeppublished_page_path({id: @page.id, keep_published: 'yes'}), :class => "btn btn-success btn-sm", :remote => true, :method => :post) -%>
       <%= link_to('Do not keep page published',change_keeppublished_page_path({id: @page.id, keep_published: 'no'}), :class => "btn btn-warning btn-sm", :remote => true, :method => :post) -%>
     </p>
-  <%- elsif @page_audit.keep_published? -%>
+  <%- elsif @page.keep_published? -%>
     <p><strong>Keep Page Published:</strong> <span class="label label-success">YES</span></p>
-    <p><small>Keep published review from <%= @page_audit.keep_published_reviewer.fullname -%></small></p>
+    <p><small>Keep published review from <%= @page.keep_published_reviewer.fullname -%></small></p>
     <p>
     <%= link_to('Do not keep page published',change_keeppublished_page_path({id: @page.id, keep_published: 'no'}), :class => "btn btn-warning btn-sm", :remote => true, :method => :post) -%>
     </p>
   <%- else -%>
     <p><strong>Keep Page Published:</strong> <span class="label label-warning">NO</span></p>
-    <p><small>Keep published review from <%= @page_audit.keep_published_reviewer.fullname -%></small></p>
+    <p><small>Keep published review from <%= @page.keep_published_reviewer.fullname -%></small></p>
     <p>
     <%= link_to('Keep page published',change_keeppublished_page_path({id: @page.id, keep_published: 'yes'}), :class => "btn btn-success btn-sm", :remote => true, :method => :post) -%>
     </p>

@@ -37,7 +37,6 @@
   </thead>
   <tbody>
     <%- @images.each do |image| -%>
-      <%- image_audit = image.create_hosted_image_audit if(!image_audit = image.hosted_image_audit) -%>
       <tr>
         <td><%= image.id -%> (<%= link_to('details',image_path(image.id)) -%>)</td>
         <td><%= imageaudit_link(image) -%></td>
@@ -52,9 +51,9 @@
           <%- end -%>
         </td>
         <td>
-          <%- if image_audit.is_stock.nil? -%>
+          <%- if image.is_stock.nil? -%>
             <span class="label label-info">not reviewed</span>
-          <%- elsif image_audit.is_stock? -%>
+          <%- elsif image.is_stock? -%>
             <span class="label label-warning">Yes</span>
           <%- else -%>
             <span class="label label-success">No</span>
@@ -63,18 +62,18 @@
         <td><%= image.copyright -%></td>
         <td>
             Community:
-            <%- if image_audit.community_reviewed.nil? -%>
+            <%- if image.community_reviewed.nil? -%>
               <span class="label label-info">not reviewed</span>
-            <%- elsif image_audit.community_reviewed? -%>
+            <%- elsif image.community_reviewed? -%>
               <span class="label label-success">Complete</span>
             <%- else -%>
               <span class="label label-warning">Incomplete</span>
             <%- end -%>
             <br/>
             Staff:
-            <%- if image_audit.staff_reviewed.nil? -%>
+            <%- if image.staff_reviewed.nil? -%>
               <span class="label label-info">not reviewed</span>
-            <%- elsif image_audit.staff_reviewed? -%>
+            <%- elsif image.staff_reviewed? -%>
               <span class="label label-success">Complete</span>
             <%- else -%>
               <span class="label label-warning">Incomplete</span>

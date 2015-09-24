@@ -9,21 +9,21 @@
     </tr>
     <tr>
   		<td>Weeks Published</td>
-    	<td class="mednumber"><%= @stats.weeks_published -%></td>
+    	<td class="mednumber"><%= @page.weeks_published -%></td>
     </tr>
     <tr>
       <td>Unique Pageviews<br/>
-      <em>between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%></em></td>
-      <td class="mednumber"><%= number_with_delimiter(@stats.unique_pageviews) -%></td>
+      <em>between <%= Page::START_DATE -%> and <%= Page::END_DATE -%></em></td>
+      <td class="mednumber"><%= number_with_delimiter(@page.unique_pageviews) -%></td>
     </tr>
     <tr>
       <td>Mean Unique Pageviews<br/>
-      <em>between <%= PageStat::START_DATE -%> and <%= PageStat::END_DATE -%></em></td>
-      <td class="mednumber"><%= number_with_precision(@stats.mean_unique_pageviews,precision: 2) -%></td>
+      <em>between <%= Page::START_DATE -%> and <%= Page::END_DATE -%></em></td>
+      <td class="mednumber"><%= number_with_precision(@page.mean_unique_pageviews,precision: 2) -%></td>
     </tr>
     <tr>
       <td>Hosted Images<br/>
-      <td class="mednumber"><%= number_with_delimiter(@stats.hosted_images) -%></td>
+      <td class="mednumber"><%= number_with_delimiter(@page.hosted_image_count) -%></td>
     </tr>
     <tr>
         <td>Communities</td>
@@ -71,7 +71,7 @@
       </div>
       <div class="panel-body">
         <div id='notes_for_page_<%= @page.id %>'>
-          <%= render(partial: 'page_audit_notes', locals: {page: @page, page_audit: @page_audit}) %>
+          <%= render(partial: 'page_audit_notes', locals: {page: @page}) %>
         </div>
       </div>
     </div>
@@ -79,7 +79,7 @@
 </div>
 
 
-<%- if @stats.hosted_images > 0 -%>
+<%- if @page.hosted_image_count > 0 -%>
 <h2>Hosted Images</h2>
 <table class="table table-striped">
   <thead>
@@ -109,10 +109,9 @@
         <%- end -%>
         </td>
         <td>
-          <%- image_audit = image.create_hosted_image_audit if(!image_audit = image.hosted_image_audit) -%>
-          <%- if image_audit.is_stock.nil? -%>
+          <%- if image.is_stock.nil? -%>
             <span class="label label-info">not reviewed</span>
-          <%- elsif image_audit.is_stock? -%>
+          <%- elsif image.is_stock? -%>
             <span class="label label-warning">Yes</span>
           <%- else -%>
             <span class="label label-warning">No</span>
@@ -121,18 +120,18 @@
         <td><%= image.copyright -%></td>
         <td>
             Community:
-            <%- if image_audit.community_reviewed.nil? -%>
+            <%- if image.community_reviewed.nil? -%>
               <span class="label label-info">not reviewed</span>
-            <%- elsif image_audit.community_reviewed? -%>
+            <%- elsif image.community_reviewed? -%>
               <span class="label label-success">Complete</span>
             <%- else -%>
               <span class="label label-warning">Incomplete</span>
             <%- end -%>
             <br/>
             Staff:
-            <%- if image_audit.staff_reviewed.nil? -%>
+            <%- if image.staff_reviewed.nil? -%>
               <span class="label label-info">not reviewed</span>
-            <%- elsif image_audit.staff_reviewed? -%>
+            <%- elsif image.staff_reviewed? -%>
               <span class="label label-success">Complete</span>
             <%- else -%>
               <span class="label label-warning">Incomplete</span>

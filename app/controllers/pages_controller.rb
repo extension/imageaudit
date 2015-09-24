@@ -10,11 +10,7 @@ require 'csv'
 class PagesController < ApplicationController
 
   def show
-    @page = Page.includes(:page_stat).find(params[:id])
-    @stats = @page.page_stat
-    if(!@page_audit = @page.page_audit)
-      @page_audit = @page.create_page_audit
-    end
+    @page = Page.find(params[:id])
   end
 
   def index
@@ -75,34 +71,30 @@ class PagesController < ApplicationController
 
   def change_keeppublished
     @page = Page.find(params[:id])
-    @page_audit = @page.page_audit
     if(!params[:keep_published].nil?)
       keep_published = TRUE_VALUES.include?(params[:keep_published])
-      previous_value = @page_audit.keep_published
+      previous_value = @page.keep_published
       is_stock = TRUE_VALUES.include?(params[:keep_published])
-      @page_audit.update_attributes({keep_published: keep_published, keep_published_by: @currentcontributor.id})
+      @page.update_attributes({keep_published: keep_published, keep_published_by: @currentcontributor.id})
       AuditLog.create(contributor: @currentcontributor,
-                      auditable: @page_audit,
+                      auditable: @page,
                       changed_item: 'keep_published',
                       previous_check_value: previous_value,
-                      current_check_value: @page_audit.keep_published?)
+                      current_check_value: @page.keep_published?)
     end
   end
 
   def set_notes
     @page = Page.find(params[:id])
-    if(!@page_audit = @page.page_audit)
-      @page_audit = @page.create_page_audit
-    end
 
     if(params[:commit] == 'Save Changes')
-      previous_notes = @page_audit.notes
-      @page_audit.update_attribute(:notes,params[:page_audit][:notes])
+      previous_notes = @page.notes
+      @page.update_attribute(:notes,params[:page][:notes])
       AuditLog.create(contributor: @currentcontributor,
-                      auditable: @page_audit,
+                      auditable: @page,
                       changed_item: 'notes',
                       previous_notes: previous_notes,
-                      current_notes: @page_audit.notes)
+                      current_notes: @page.notes)
     end
     respond_to do |format|
       format.js
@@ -117,7 +109,7 @@ class PagesController < ApplicationController
       headers << 'Page ID#'
       headers << 'Keep Published'
       headers << 'Page Type'
-      headers << "Weeks Published (Prior to #{PageStat::END_DATE})"
+      headers << "Weeks Published (Prior to #{Page::END_DATE})"
       headers << 'Unique Pageviews'
       headers << 'Mean Unique Pageviews'
       headers << 'Page Source'
@@ -130,22 +122,20 @@ class PagesController < ApplicationController
       headers << 'Notes'
       csv << headers
       pages.each do |page|
-        page_audit = page.page_audit
-        page_stat = page.page_stat
         row = []
         row << page.id
-        if(page_audit.keep_published.nil?)
+        if(page.keep_published.nil?)
           row << 'Unreviewed'
-        elsif(page_audit.keep_published?)
+        elsif(page.keep_published?)
           row << 'Yes'
         else
           row << 'No'
         end
         row << "#{page.datatype}"
-        row << page_stat.weeks_published
-        if(page_stat.weeks_published > 0)
-          row << page_stat.unique_pageviews
-          row << page_stat.mean_unique_pageviews
+        row << page.weeks_published
+        if(page.weeks_published > 0)
+          row << page.unique_pageviews
+          row << page.mean_unique_pageviews
         else
           row << 'n/a'
           row << 'n/a'
@@ -153,12 +143,12 @@ class PagesController < ApplicationController
         row << "#{page.source}"
         row << "#{page.source_url}"
         row << "http://#{Settings.articles_site}/pageinfo/#{page.id}"
-        row << page_stat.image_links
-        row << page_stat.hosted_images
+        row << page.image_links
+        row << page.hosted_images
         row << "#{page.groups.publishing.map(&:name).join(',')}"
         row << "#{page.tags.map(&:name).join(',')}"
-        if(!page_audit.notes.blank?)
-          row << "#{page_audit.html_to_pretty_text(page_audit.notes)}"
+        if(!page.notes.blank?)
+          row << "#{page.html_to_pretty_text(page.notes)}"
         else
           row << ''
         end

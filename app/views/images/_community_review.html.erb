@@ -1,21 +1,21 @@
 <div class="dashmodule">
-  <%- if @image_audit.community_reviewed.nil? -%>
+  <%- if @image.community_reviewed.nil? -%>
     <p><strong>Community Review:</strong> <span class="label label-info">Not Yet Reviewed</span></p>
     <p>
       <%= link_to('Copyright complete',change_communityreview_image_path({id: @image.id, community_reviewed: 'yes'}), :class => "btn btn-success btn-sm", :remote => true, :method => :post) -%>
       <%= link_to('Copyright incomplete',change_communityreview_image_path({id: @image.id, community_reviewed: 'no'}), :class => "btn btn-warning btn-sm", :remote => true, :method => :post) -%>
 
     </p>
-  <%- elsif @image_audit.community_reviewed? -%>
+  <%- elsif @image.community_reviewed? -%>
     <p><strong>Community Review:</strong> <span class="label label-success">Copyright complete</span></p>
-    <p><small>Community copyright review from <%= @image_audit.community_reviewer.fullname -%></small></p>
+    <p><small>Community copyright review from <%= @image.community_reviewer.fullname -%></small></p>
     <p>
       <%= link_to('Copyright incomplete',change_communityreview_image_path({id: @image.id, community_reviewed: 'no'}), :class => "btn btn-warning btn-sm", :remote => true, :method => :post) -%>
       <%= link_to('Clear review',change_communityreview_image_path({id: @image.id, community_reviewed: 'clear'}), :class => "btn btn-link btn-sm", :remote => true, :method => :post) -%>
     </p>
   <%- else -%>
     <p><strong>Community Review:</strong> <span class="label label-warning">Copyright incomplete</span></p>
-    <p><small>Community copyright review from <%= @image_audit.community_reviewer.fullname -%></small></p>
+    <p><small>Community copyright review from <%= @image.community_reviewer.fullname -%></small></p>
     <p>
     <%= link_to('Copyright complete',change_communityreview_image_path({id: @image.id, community_reviewed: 'yes'}), :class => "btn btn-success btn-sm", :remote => true, :method => :post) -%>
     <%= link_to('Clear review',change_communityreview_image_path({id: @image.id, community_reviewed: 'clear'}), :class => "btn btn-link btn-sm", :remote => true, :method => :post) -%>
