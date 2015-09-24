@@ -100,7 +100,7 @@ class HostedImage < ActiveRecord::Base
     when 'All'
       where('true')
     when 'Reviewed'
-      where('community_reviewed IN (1,0)')
+      where('hosted_images.community_reviewed IN (1,0)')
     when 'Unreviewed'
       reviewed = self.community_reviewed('Reviewed').pluck('hosted_images.id')
       if(!reviewed.blank?)
@@ -109,9 +109,9 @@ class HostedImage < ActiveRecord::Base
         where('true')
       end
     when 'Complete'
-      where('community_reviewed = 1')
+      where('hosted_images.community_reviewed = 1')
     when 'Incomplete'
-      where('community_reviewed = 0')
+      where('hosted_images.community_reviewed = 0')
     else
       where('true')
     end
@@ -122,7 +122,7 @@ class HostedImage < ActiveRecord::Base
     when 'All'
       where('true')
     when 'Reviewed'
-      where('staff_reviewed IN (1,0)')
+      where('hosted_images.staff_reviewed IN (1,0)')
     when 'Unreviewed'
       reviewed = self.staff_reviewed('Reviewed').pluck('hosted_images.id')
       if(!reviewed.blank?)
@@ -131,9 +131,9 @@ class HostedImage < ActiveRecord::Base
         where('true')
       end
     when 'Complete'
-      where('staff_reviewed = 1')
+      where('hosted_images.staff_reviewed = 1')
     when 'Incomplete'
-      where('staff_reviewed = 0')
+      where('hosted_images.staff_reviewed = 0')
     else
       where('true')
     end
