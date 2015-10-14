@@ -285,15 +285,5 @@ class HostedImage < ActiveRecord::Base
     self.joins(:pages => :tags).where("tags.name = 'bio'")
   end
 
-  # temporary method to facilitate copyright updates
-  def self.update_bio_copyrights
-    self.bio_images.without_copyright.readonly(false).each do |hi|
-      if(create_file = hi.create_file)
-        hi.update_attributes(copyright: 'Photo provided for eXtension bio page', staff_reviewed: true, staff_reviewed_by: 1)
-        create_file.create_copyright_update_query(hi.copyright)
-      end
-    end
-  end
-
 
 end
