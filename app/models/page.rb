@@ -45,6 +45,17 @@ class Page < ActiveRecord::Base
   scope :unviewed, -> (view_base = 1) {eligible_pages.where("mean_unique_pageviews < ?",view_base)}
   scope :missing, -> {eligible_pages.where("mean_unique_pageviews = 0")}
 
+  scope :tagged_with, lambda{|tagliststring|
+    tag_list = Tag.castlist_to_array(tagliststring)
+    in_string = tag_list.map{|t| "'#{t}'"}.join(',')
+    joins(:tags).where("tags.name IN (#{in_string})").group("#{self.table_name}.id").having("COUNT(#{self.table_name}.id) = #{tag_list.size}")
+  }
+
+  scope :tagged_with_any, lambda { |tagliststring|
+    tag_list = Tag.castlist_to_array(tagliststring)
+    in_string = tag_list.map{|t| "'#{t}'"}.join(',')
+    joins(:tags).where("tags.name IN (#{in_string})").group("#{self.table_name}.id")
+  }
 
   def self.eligible(flag = true)
     if(flag)

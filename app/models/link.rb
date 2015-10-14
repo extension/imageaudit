@@ -68,6 +68,10 @@ class Link < ActiveRecord::Base
     true
   end
 
+  def self.rebuild
+    self.connection.execute("truncate table #{self.table_name};")
+    self.connection.execute("INSERT INTO #{self.table_name} SELECT * from #{ArticleLink.connection.current_database}.#{ArticleLink.table_name};")
+  end
 
   def self.update_list
     self.connection.execute("INSERT IGNORE INTO #{self.table_name} SELECT * from #{ArticleLink.connection.current_database}.#{ArticleLink.table_name};")

@@ -23,8 +23,13 @@ class HostedImage < ActiveRecord::Base
   scope :from_copwiki, -> {where(source: 'copwiki')}
   scope :from_create, -> {where(source: 'create')}
   scope :with_copyright, -> {where("copyright IS NOT NULL")}
+  scope :without_copyright, -> {where("copyright IS NULL or LENGTH(copyright) = 0")}
 
   has_many :audit_logs, :as => :auditable
+
+  def create_file
+    CreateFile.where(fid: self.source_id).first
+  end
 
   def filemime
     MimeMagic.by_magic(File.open(self.filesys_path))
@@ -274,6 +279,24 @@ class HostedImage < ActiveRecord::Base
       else
         # nothing for now
     end
+  end
+
+  def self.bio_images
+    self.joins(:pages => :tags).where("tags.name = 'bio'")
+  end
+
+  # temporary method to facilitate copyright updates
+  def self.update_bio_copyrights
+    total_count = self.bio_images.count
+    changed_count = 0
+    self.bio_images.without_copyright.readonly(false).each do |hi|
+      if(create_file = hi.create_file)
+        changed_count += 1
+        hi.update_attributes(copyright: 'Photo provided for eXtension bio page', staff_reviewed: true, staff_reviewed_by: 1)
+        create_file.create_copyright_update_query(hi.copyright)
+      end
+    end
+    {total_count: total_count, changed_count: changed_count}
   end
 
 
