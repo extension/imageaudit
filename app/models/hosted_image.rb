@@ -287,12 +287,16 @@ class HostedImage < ActiveRecord::Base
 
   # temporary method to facilitate copyright updates
   def self.update_bio_copyrights
+    total_count = self.bio_images.count
+    changed_count = 0
     self.bio_images.without_copyright.readonly(false).each do |hi|
       if(create_file = hi.create_file)
+        changed_count += 1
         hi.update_attributes(copyright: 'Photo provided for eXtension bio page', staff_reviewed: true, staff_reviewed_by: 1)
         create_file.create_copyright_update_query(hi.copyright)
       end
     end
+    {total_count: total_count, changed_count: changed_count}
   end
 
 
