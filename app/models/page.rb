@@ -61,7 +61,7 @@ class Page < ActiveRecord::Base
     if(flag)
       where("weeks_published > 0")
     else
-    where("weeks_published = 0")
+      where("weeks_published = 0")
     end
   end
 
@@ -186,41 +186,23 @@ class Page < ActiveRecord::Base
     attributes
   end
 
-  def self.overall_stat_attributes(rebuild = false)
-    if(!rebuild and cps = CommunityPageStat.where(group_id: 0).first)
-      cps.attributes
-    else
-      total_pages = self.count
-      eligible_pages = self.eligible_pages.count
-      viewed_pages = self.viewed.count
-      viewed_percentiles = self.mup_percentiles
-      keep_pages = Page.keep.count
-
-      attributes = {}
-      attributes[:total_pages] = total_pages
-      attributes[:eligible_pages] = eligible_pages
-      attributes[:viewed_pages] = viewed_pages
-      attributes[:keep_pages] = keep_pages
-
-      attributes[:viewed_percentiles] = viewed_percentiles
-      attributes[:image_links] = Link.image.count("distinct links.id")
-      attributes[:viewed_image_links] = Link.image.joins(:linkedpages).where("mean_unique_pageviews >= 1").count("distinct links.id")
-      attributes[:keep_image_links] = Link.image.joins(:linkedpages).where("keep_published = 1").count("distinct links.id")
-
-      attributes[:hosted_images] = HostedImage.linked.count
-      attributes[:viewed_hosted_images] = HostedImage.viewed.count
-
-      attributes[:keep_hosted_images] = HostedImage.keep.count
-      attributes[:keep_stock_images] = HostedImage.keep.stock('Yes').count
-      attributes[:keep_not_stock_images] = HostedImage.keep.stock('No').count
-
-      if(cps = CommunityPageStat.where(group_id: 0).first)
-        cps.update_attributes(attributes)
-      else
-        cps = CommunityPageStat.create(attributes.merge({:group_id => 0}))
-      end
-      cps.attributes
-    end
+  def self.overall_stat_attributes(cache_options = {})
+    # cache_key = self.get_cache_key(__method__)
+    # Rails.cache.fetch(cache_key,cache_options) do
+      overall_stats = {}
+      overall_stats['total_pages'] =  self.count
+      overall_stats['eligible_pages'] = self.eligible_pages.count
+      overall_stats['viewed_pages'] = self.viewed.count
+      overall_stats['image_links'] = Link.image.count("distinct links.id")
+      overall_stats['hosted_images'] = HostedImage.linked.count
+      overall_stats['stock_hosted_images'] = HostedImage.linked.stock('Yes').count
+      overall_stats['unreviewed_stock_hosted_images'] = HostedImage.linked.stock('Unreviewed').count
+      overall_stats['staff_reviewed_hosted_images'] = HostedImage.linked.staff_reviewed('Reviewed').count
+      overall_stats['staff_unreviewed_hosted_images'] = HostedImage.linked.staff_reviewed('Unreviewed').count
+      overall_stats['staff_complete_hosted_images'] = HostedImage.linked.staff_reviewed('Complete').count
+      overall_stats['staff_incomplete_hosted_images'] = HostedImage.linked.staff_reviewed('Incomplete').count
+      overall_stats
+    # end
   end
 
   def self.mup_percentiles

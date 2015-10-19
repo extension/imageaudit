@@ -19,7 +19,7 @@ class ImagesController < ApplicationController
       @filtered = true
       image_scope = @community.hosted_images
     else
-      image_scope = HostedImage.scoped({})
+      image_scope = HostedImage.linked
     end
 
 
@@ -29,7 +29,7 @@ class ImagesController < ApplicationController
       case @page_status
       when 'All'
         @filtered = false
-        image_scope = (@community.nil? ? HostedImage.scoped({}) : @community.hosted_images)
+        image_scope = (@community.nil? ? HostedImage.linked : @community.hosted_images)
       when 'Viewed'
         image_scope = (@community.nil? ? HostedImage.viewed(true) : @community.hosted_images.viewed(true))
       when 'Unviewed'
@@ -40,7 +40,7 @@ class ImagesController < ApplicationController
         image_scope = (@community.nil? ? HostedImage.keep(false) : @community.hosted_images.keep(false))
       else
         @filtered = false
-        image_scope = (@community.nil? ? HostedImage.scoped({}) : @community.hosted_images)
+        image_scope = (@community.nil? ? HostedImage.linked : @community.hosted_images)
       end
     end
 

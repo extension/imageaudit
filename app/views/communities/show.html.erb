@@ -1,4 +1,5 @@
 <h1><%= @community.name -%> Content Summary</h1>
+<h1>Content Summary</h1>
 <table class="table table-striped">
     <tr>
   		<td>Total Pages</td>
@@ -6,81 +7,14 @@
       <td>&nbsp;</td>
     </tr>
     <tr>
-      <td>Keep Pages</td>
-      <td style="white-space:nowrap;">
-        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['keep_pages']), pages_path(:community_id => @community.id, :page_status => 'Keep')) -%></span>
-        <span class="mednumber">(<%= percentage_display(@summary_data['keep_pages'],@summary_data['total_pages']) -%>)</span>
-      </td>
-      <td>
-        <p><em>Pages marked by eXtension Core Team members or by the Community <strong>to keep</strong></em></p>
-        <p><em>The initial set included</em> viewed pages <em>those with <strong>at least one or more</strong>
-               mean unique pageviews per week between <%= Page::START_DATE -%> and <%= Page::END_DATE -%>;
-               pages that had been published since <%= Page::END_DATE -%>; and pages tagged "bio","homage", or "contents"</em></p>
-      </td>
-    </tr>
-    <tr>
-      <td>Unpublish Pages</td>
-      <td style="white-space:nowrap;">
-        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['total_pages'] - @summary_data['keep_pages']) ), pages_path(:community_id => @community.id, :page_status => 'Unpublish')) -%></span>
-        <span class="mednumber">(<%= percentage_display((@summary_data['total_pages'] - @summary_data['keep_pages']),@summary_data['total_pages']) -%>)</span>
-      </td>
-      <td>
-        <p><em>Pages marked by eXtension Core Team members or by the Community <strong>to unpublish</strong></em></p>
-        <p><em>The initial set included</em> unviewed pages <em>those with <strong>less than one</strong>
-               mean unique pageviews per week between <%= Page::START_DATE -%> and <%= Page::END_DATE -%>
-               that were not tagged "bio","homage", or "contents"</em></p>
-      </td>
-    </tr>
-    <tr>
-      <td>Kept Hosted Images</td>
-      <td>
-        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['keep_hosted_images']), images_path(:community_id => @community.id, :page_status => 'Keep')) -%></span><br/>
-      </td>
-      <td>
-        <em>Images uploaded to either the legacy cop.extension.org cms or the create.extension.org cms that are linked to within <strong>pages to keep</strong></em>
-      </td>
-    </tr>
-    <tr>
-      <td>Kept Hosted Images - Stock</td>
-      <td>
-        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['keep_stock_images']), images_path(:community_id => @community.id, :page_status => 'Keep', :stock => 'Yes')) -%></span><br/>
-      </td>
-      <td>
-        <em>Images on <strong>pages to keep</strong> that have been reviewed as <strong>a stock image</strong> by eXtension Core Team members or the Community </em>
-      </td>
-    </tr>
-    <tr>
-      <td>Kept Hosted Images - Not Stock</td>
-      <td>
-        <span class="mednumber"><%=  link_to(number_with_delimiter(@summary_data['keep_not_stock_images']), images_path(:community_id => @community.id, :page_status => 'Keep', :stock => 'No')) -%></span><br/>
-      </td>
-      <td>
-        <em>Images on <strong>pages to keep</strong> that have been reviewed as <strong>not a stock image</strong> by eXtension Core Team members or the Community </em>
-      </td>
-    </tr>
-
-    <tr>
-      <td>Kept Hosted Images - Not Yet Reviewed for Stock</td>
-      <td>
-        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['keep_hosted_images'] - (@summary_data['keep_stock_images'] + @summary_data['keep_not_stock_images']))), images_path(:community_id => @community.id, :page_status => 'Keep', :stock => 'Unreviewed')) -%></span>
-      </td>
-      <td>
-        <em>Images on <strong>pages to keep</strong> that have <strong>not yet been reviewed</strong> for stock image status by eXtension Core Team members or the Community</em>
-      </td>
-    </tr>
-
-</table>
-<h3>Additional Content Statistics</h3>
-<table class="table">
-    <tr>
       <td>Eligible Pages</td>
-      <td class="mednumber"><%= link_to(number_with_delimiter(@summary_data['eligible_pages']), pages_path(:community_id => @community.id, :page_status => 'Eligible')) -%></td>
+      <td class="mednumber"><%= link_to(number_with_delimiter(@summary_data['eligible_pages']), pages_path(:community_id => @community.id,:page_status => 'Eligible')) -%></td>
       <td><em>Pages published for at least 1 week prior to <%= Page::END_DATE -%></em></td>
     </tr>
     <tr>
       <td>Viewed Pages</td>
       <td style="white-space:nowrap;">
-        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['viewed_pages']), pages_path(:community_id => @community.id, :page_status => 'Viewed')) -%></span>
+        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['viewed_pages']), pages_path(:community_id => @community.id,:page_status => 'Viewed')) -%></span>
         <span class="mednumber">(<%= percentage_display(@summary_data['viewed_pages'],@summary_data['eligible_pages']) -%>)</span>
       </td>
       <td><em>Pages with <strong>at least one or more</strong> mean unique pageviews per week<br/>between <%= Page::START_DATE -%> and <%= Page::END_DATE -%></em></td>
@@ -88,7 +22,7 @@
     <tr>
       <td>Unviewed Pages</td>
       <td style="white-space:nowrap;">
-        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['eligible_pages'] - @summary_data['viewed_pages']) ), pages_path(:community_id => @community.id, :page_status => 'Unviewed')) -%></span>
+        <span class="mednumber"><%= link_to(number_with_delimiter((@summary_data['eligible_pages'] - @summary_data['viewed_pages']) ), pages_path(:community_id => @community.id,:page_status => 'Unviewed')) -%></span>
         <span class="mednumber">(<%= percentage_display((@summary_data['eligible_pages'] - @summary_data['viewed_pages']),@summary_data['eligible_pages']) -%>)</span>
       </td>
       <td>
@@ -96,22 +30,59 @@
         between <%= Page::START_DATE -%> and <%= Page::END_DATE -%></em>
       </td>
     </tr>
-    <tr>
-      <td>Image Links</td>
-      <td>
-        <span class="mednumber"><%= number_with_delimiter(@summary_data['image_links']) -%></span>
-      </td>
-      <td>
-        <em>Links (good or bad) to any kind of image, including various sizes or styles of hosted images</em>
-      </td>
-    </tr>
-    <tr>
-      <td>All Hosted Images</td>
-      <td>
-        <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['hosted_images']), images_path(:community_id => @community.id)) -%></span><br/>
-      </td>
-      <td>
-        <em>Images uploaded to either the legacy cop.extension.org cms or the create.extension.org cms</em>
-      </td>
-    </tr>
+
+</table>
+<h3>Image Statistics</h3>
+<table class="table">
+  <tr>
+    <td>Hosted Images</td>
+    <td>
+      <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['hosted_images']), images_path(:community_id => @community.id)) -%></span><br/>
+    </td>
+    <td>
+      <em>Images uploaded to either the legacy cop.extension.org cms or the create.extension.org cms</em>
+    </td>
+  </tr>
+
+  <tr>
+    <td>Images - Unreviewed for Stock</td>
+    <td>
+      <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['unreviewed_stock_hosted_images']), images_path(:community_id => @community.id,:stock => 'Unreviewed')) -%></span><br/>
+    </td>
+    <td>
+      <em>Images that have been reviewed as a stock image by eXtension Core Team members or the Community</em>
+    </td>
+  </tr>
+
+  <tr>
+    <td>Staff Copyright Complete Images</td>
+    <td>
+      <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['staff_complete_hosted_images']), images_path(:community_id => @community.id,:staff_reviewed => 'Complete')) -%></span><br/>
+    </td>
+    <td>
+      <em>Images that have been reviewed by an eXtension Staff member as copyright complete</em>
+    </td>
+  </tr>
+
+  <tr>
+    <td>Staff Copyright Incomplete Images</td>
+    <td>
+      <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['staff_incomplete_hosted_images']), images_path(:community_id => @community.id,:staff_reviewed => 'Incomplete')) -%></span><br/>
+    </td>
+    <td>
+      <em>Images that have been reviewed by an eXtension Staff member as copyright <strong>incomplete</strong></em>
+    </td>
+  </tr>
+
+
+  <tr>
+    <td>Images - Unreviewed by Staff for Copyright</td>
+    <td>
+      <span class="mednumber"><%= link_to(number_with_delimiter(@summary_data['staff_unreviewed_hosted_images']), images_path(:community_id => @community.id,:staff_reviewed => 'Unreviewed')) -%></span><br/>
+    </td>
+    <td>
+      <em>Images that have not yet had a copyright review from an eXtension Staff member</em>
+    </td>
+  </tr>
+
 </table>
