@@ -11,8 +11,7 @@ class CommunitiesController < ApplicationController
 
   def show
     @community = Group.find(params[:id])
-    @summary_data = @community.community_page_stat.attributes
-    #@summary_data['viewed_stock_images'] = @community.hosted_images.viewed_stock_count
+    @summary_data = @community.page_stat_attributes
   end
 
 end
