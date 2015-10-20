@@ -74,8 +74,12 @@ class HostedImage < ActiveRecord::Base
 
   def self.search_copyright_terms(searchstring)
     terms = searchstring.split(',').map{|t| t.strip}.compact
-    whereclause = terms.map{|t| "copyright RLIKE '[[:<:]]#{t}[[:>:]]'"}.join(' OR ')
-    where("#{whereclause}")
+    whereclause = []
+    terms.each do |t|
+      searchterm = ActiveRecord::Base.quote_value("[[:<:]]#{t}[[:>:]]")
+      whereclause << "copyright RLIKE #{searchterm}"
+    end
+    where("#{whereclause.join(' OR ')}")
   end
 
   def self.stock(stock = 'All')
