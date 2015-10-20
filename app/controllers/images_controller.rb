@@ -34,10 +34,6 @@ class ImagesController < ApplicationController
         image_scope = (@community.nil? ? HostedImage.viewed(true) : @community.hosted_images.viewed(true))
       when 'Unviewed'
         image_scope = (@community.nil? ? HostedImage.viewed(false) : @community.hosted_images.viewed(false))
-      when 'Keep'
-        image_scope = (@community.nil? ? HostedImage.keep(true) : @community.hosted_images.keep(true))
-      when 'Unpublish'
-        image_scope = (@community.nil? ? HostedImage.keep(false) : @community.hosted_images.keep(false))
       else
         @filtered = false
         image_scope = (@community.nil? ? HostedImage.linked : @community.hosted_images)
