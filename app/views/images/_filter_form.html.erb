@@ -15,7 +15,7 @@
       <div class="form-group">
         <%= label_tag('page_status', 'Containing Page(s) Status', :class => 'col-md-3 control-label') -%>
         <div class="col-md-2">
-          <%= select_tag("page_status",options_for_select([ "All", "Keep","Unpublish","Viewed","Unviewed"], @page_status || "All"), class: 'form-control' ) -%>
+          <%= select_tag("page_status",options_for_select([ "All","Viewed","Unviewed"], @page_status || "All"), class: 'form-control' ) -%>
         </div>
       </div>
 
