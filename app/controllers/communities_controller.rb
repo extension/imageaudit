@@ -7,6 +7,7 @@
 class CommunitiesController < ApplicationController
 
   def index
+    @group_stats = Group.stats_by_group.sort_by{|id,data| data['group_name']} 
   end
 
   def show
