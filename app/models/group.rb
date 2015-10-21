@@ -62,9 +62,8 @@ class Group < ActiveRecord::Base
   end
 
   def self.stats_by_group
-    if(@all_group_stats.nil?)
       # get stat sets
-      @all_group_stats = {}
+      all_group_stats = {}
       pages_set = Group.publishing.joins(:pages).group('groups.id').count
       eligible_pages_set = Group.publishing.joins(:pages).where("pages.weeks_published >= ?",1).group("groups.id").count
       viewed_pages_set = Group.publishing.joins(:pages).where("pages.mean_unique_pageviews >= ?",1).group("groups.id").count
@@ -91,11 +90,10 @@ class Group < ActiveRecord::Base
         group_stats['staff_unreviewed_hosted_images']= (staff_unreviewed_hosted_image_set[group.id].nil? ? 0 : staff_unreviewed_hosted_image_set[group.id])
         group_stats['staff_complete_hosted_images']= (staff_complete_hosted_image_set[group.id].nil? ? 0 : staff_complete_hosted_image_set[group.id])
         group_stats['staff_incomplete_hosted_images']= (staff_incomplete_hosted_image_set[group.id].nil? ? 0 : staff_incomplete_hosted_image_set[group.id])
-        @all_group_stats[group.id] = group_stats
-        @all_group_stats[group.id]['group_name'] = group.name
+        all_group_stats[group.id] = group_stats
+        all_group_stats[group.id]['group_name'] = group.name
       end
-    end
-    @all_group_stats
+      all_group_stats
   end
 
 

@@ -15,6 +15,7 @@ class HomeController < ApplicationController
       return render :template => 'home/rebuild_in_progress'
     else
       @summary_data = Page.overall_stat_attributes
+      @group_stats = Group.stats_by_group.sort_by{|id,data| data['group_name']} 
     end
   end
 end
