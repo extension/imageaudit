@@ -229,21 +229,26 @@ class HostedImage < ActiveRecord::Base
                           current_notes: create_copyright)
 
           if(!hi.community_reviewed.nil?)
-            hi.update_attributes({:community_reviewed => nil, :community_reviewed_by => nil})
-            AuditLog.create(contributor_id: 1,
-                            auditable: hi,
-                            changed_item: 'community_reviewed',
-                            previous_check_value: hi.community_reviewed?,
-                            current_check_value: nil)
+            # check to see if the last audit happened in the last hour, don't clear if so
+            if(AuditLog.where(auditable_type: 'HostedImage').where(auditable_id: hi.id).where(changed_item: 'community_reviewed').where("created_at > ?",1.hour.ago).count == 0)
+              hi.update_attributes({:community_reviewed => nil, :community_reviewed_by => nil})
+              AuditLog.create(contributor_id: 1,
+                              auditable: hi,
+                              changed_item: 'community_reviewed',
+                              previous_check_value: hi.community_reviewed?,
+                              current_check_value: nil)
+            end
           end
 
           if(!hi.staff_reviewed.nil?)
-            hi.update_attributes({:staff_reviewed => nil, :staff_reviewed_by => nil})
-            AuditLog.create(contributor_id: 1,
-                            auditable: hi,
-                            changed_item: 'staff_reviewed',
-                            previous_check_value: hi.staff_reviewed?,
-                            current_check_value: nil)
+            if(AuditLog.where(auditable_type: 'HostedImage').where(auditable_id: hi.id).where(changed_item: 'staff_reviewed').where("created_at > ?",1.hour.ago).count == 0)
+              hi.update_attributes({:staff_reviewed => nil, :staff_reviewed_by => nil})
+              AuditLog.create(contributor_id: 1,
+                              auditable: hi,
+                              changed_item: 'staff_reviewed',
+                              previous_check_value: hi.staff_reviewed?,
+                              current_check_value: nil)
+            end
           end
         end
       end

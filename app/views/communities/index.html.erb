@@ -14,7 +14,6 @@
     </tr>
   </thead>
   <tbody>
-    <%- group_stats = Group.stats_by_group.sort_by{|id,data| data['group_name']} -%>
     <%- @group_stats.each do |group_id, stats| -%>
         <tr>
         <td><%= link_to(stats['group_name'],community_path(group_id)) -%></td>
