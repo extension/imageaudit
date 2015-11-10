@@ -87,7 +87,7 @@ class Link < ActiveRecord::Base
   end
 
   def self.is_www?(host)
-    (host == 'www.extension.org' or host == 'www.demo.extension.org')
+    (host == 'www.extension.org' or host == 'www.demo.extension.org' or host == 'articles.extension.org')
   end
 
   def is_create?
