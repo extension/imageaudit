@@ -158,7 +158,7 @@ class Page < ActiveRecord::Base
     if(self.article_created_at.to_date > through_date)
       0
     else
-      (through_date - self.article_created_at.to_date).to_i / 7
+      ((through_date - self.article_created_at.to_date).to_i / 7).to_i
     end
   end
 

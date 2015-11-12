@@ -25,20 +25,20 @@
         <%- if(@audit_log.changed_item == 'notes') -%>
           <tr>
             <td>Previous Notes</td>
-            <td><%= (@audit_log.previous_notes.blank? ? 'n/a' : @audit_log.previous_notes) -%></td>
+            <td><%= (@audit_log.previous_notes.blank? ? 'n/a' : @audit_log.previous_notes.html_safe) -%></td>
           </tr>
           <tr>
             <td>Current Notes</td>
-            <td><%= (@audit_log.current_notes.blank? ? 'n/a' : @audit_log.current_notes) -%></td>
+            <td><%= (@audit_log.current_notes.blank? ? 'n/a' : @audit_log.current_notes.html_safe) -%></td>
           </tr>
         <%- elsif(@audit_log.changed_item == 'copyright') -%>
           <tr>
             <td>Previous Copyright</td>
-            <td><%= (@audit_log.previous_notes.blank? ? 'n/a' : @audit_log.previous_notes) -%></td>
+            <td><%= (@audit_log.previous_notes.blank? ? 'n/a' : @audit_log.previous_notes.html_safe) -%></td>
           </tr>
           <tr>
             <td>Current Copyright</td>
-            <td><%= (@audit_log.current_notes.blank? ? 'n/a' : @audit_log.current_notes) -%></td>
+            <td><%= (@audit_log.current_notes.blank? ? 'n/a' : @audit_log.current_notes.html_safe) -%></td>
           </tr>
         <%- end -%>
     </table>

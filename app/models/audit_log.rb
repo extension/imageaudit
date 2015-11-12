@@ -115,11 +115,11 @@ class AuditLog < ActiveRecord::Base
 
     attachment["fields"].push({"title" => "Action", "value" => self.audit_action_string, "short" => false})
     if(self.changed_item == 'notes')
-      attachment["fields"].push({"title" => "Previous Notes", "value" => (self.previous_notes.blank? ? 'n/a' : self.previous_notes), "short" => false})
-      attachment["fields"].push({"title" => "Current Notes", "value" => (self.current_notes.blank? ? 'n/a' : self.current_notes), "short" => false})
+      attachment["fields"].push({"title" => "Previous Notes", "value" => (self.previous_notes.blank? ? 'n/a' : self.previous_notes.html_safe), "short" => false})
+      attachment["fields"].push({"title" => "Current Notes", "value" => (self.current_notes.blank? ? 'n/a' : self.current_notes.html_safe), "short" => false})
     elsif(self.changed_item == 'copyright')
-      attachment["fields"].push({"title" => "Previous Copyright", "value" => (self.previous_notes.blank? ? 'n/a' : self.previous_notes), "short" => false})
-      attachment["fields"].push({"title" => "Current Copyright", "value" => (self.current_notes.blank? ? 'n/a' : self.current_notes), "short" => false})
+      attachment["fields"].push({"title" => "Previous Copyright", "value" => (self.previous_notes.blank? ? 'n/a' : self.previous_notes.html_safe), "short" => false})
+      attachment["fields"].push({"title" => "Current Copyright", "value" => (self.current_notes.blank? ? 'n/a' : self.current_notes.html_safe), "short" => false})
     end
     attachment["fields"].push({"title" => "Details", "value" => self.notification_url, "short" => false})
     post_options[:attachment] = attachment
