@@ -1,5 +1,5 @@
 create_site: 'create.extension.org'
-articles_site: 'www.extension.org'
+articles_site: 'articles.extension.org'
 urlwriter_host: 'imageaudit.extension.org'
 app_location: 'production'
 honeybadger_api_key: 'use_local_settings'
