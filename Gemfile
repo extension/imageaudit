@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'rails', '3.2.21'
+gem 'rails', '3.2.22.1'
 
 # data
 gem 'mysql2'
@@ -81,7 +81,7 @@ group :development do
   gem 'pry'
   gem 'httplog'
   gem 'capistrano', '~> 2.15.5'
-  gem 'capatross'
+  gem 'capatross', source: 'https://engineering.extension.org/rubygems'
   gem 'exdata', source: 'https://engineering.extension.org/rubygems'
 
   # moar advanced stats in dev only
