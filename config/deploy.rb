@@ -26,6 +26,7 @@ if(TRUE_VALUES.include?(ENV['MIGRATE']))
   after "deploy", "sidekiq:start"
   after "deploy", "deploy:web:enable"
 else
+  before "deploy", "sidekiq:stop"
   before "deploy", "deploy:checks:git_migrations"
   after "deploy:update_code", "deploy:link_and_copy_configs"
   after "deploy:update_code", "deploy:cleanup"
