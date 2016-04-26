@@ -263,21 +263,27 @@ class HostedImage < ActiveRecord::Base
         # somehow there are /a/aa/filename/some_other_file_name paths
         matchpath_breakdown = matchpath.split('/')
         searchpath = "/#{matchpath_breakdown[1]}/#{matchpath_breakdown[2]}/#{matchpath_breakdown[3]}"
-        id = self.where(original_path: searchpath).where(original_wiki: true).first
-        if(id.nil?)
-          id = self.where(path: searchpath).where(source: 'copwiki').first
+        hi = self.where(original_path: searchpath).where(original_wiki: true).first
+        if(hi.nil?)
+          hi = self.where(path: searchpath).where(source: 'copwiki').first
         end
-        if(id)
+        if(hi)
           begin
-            id.hosted_image_links.create(link_id: link_id)
+            hi.hosted_image_links.create(link_id: link_id)
+            AuditLog.create(contributor_id: 1,
+                            auditable: hi,
+                            changed_item: 'link')
           rescue ActiveRecord::RecordNotUnique
             # already linked
           end
         end
       when 'create'
-        if(id = self.where(path: "public://#{matchpath}").where(source: 'create').first)
+        if(hi = self.where(path: "public://#{matchpath}").where(source: 'create').first)
           begin
-            id.hosted_image_links.create(link_id: link_id)
+            hi.hosted_image_links.create(link_id: link_id)
+            AuditLog.create(contributor_id: 1,
+                            auditable: hi,
+                            changed_item: 'link')            
           rescue ActiveRecord::RecordNotUnique
             # already linked
           end

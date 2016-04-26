@@ -40,6 +40,17 @@ class AuditLog < ActiveRecord::Base
     audit_log_url(self)
   end
 
+  def auditable_url
+    ao = self.changed_object
+    if(ao.class.name == 'HostedImage')
+      image_url(ao.id)
+    elsif(ao.class.name == 'Page')
+      page_url(ao.id)
+    else
+      "#{audit_log.audit_type} ID# #{ao.id}"
+    end
+  end
+
   def changed_object
     self.auditable
   end
@@ -71,7 +82,9 @@ class AuditLog < ActiveRecord::Base
       else
         return_string_array << "#{self.contributor.fullname} audited #{auditable_type_string}"
       end
-    elsif
+    elsif(self.changed_item == 'link')
+      return_string_array << "#{auditable_type_string.capitalize} was linked to a published page."
+    else
       return_string_array << "#{self.contributor.fullname} audited #{auditable_type_string}"
       if(current_check_value.nil?)
         return_string_array << "clearing the value for `#{self.changed_item}`"
@@ -113,13 +126,21 @@ class AuditLog < ActiveRecord::Base
     "color" => "good"
     }
 
-    attachment["fields"].push({"title" => "Action", "value" => self.audit_action_string, "short" => false})
     if(self.changed_item == 'notes')
+      attachment["fields"].push({"title" => "Action", "value" => self.audit_action_string, "short" => false})
       attachment["fields"].push({"title" => "Previous Notes", "value" => (self.previous_notes.blank? ? 'n/a' : self.previous_notes.html_safe), "short" => false})
       attachment["fields"].push({"title" => "Current Notes", "value" => (self.current_notes.blank? ? 'n/a' : self.current_notes.html_safe), "short" => false})
     elsif(self.changed_item == 'copyright')
+      attachment["fields"].push({"title" => "Action", "value" => self.audit_action_string, "short" => false})
       attachment["fields"].push({"title" => "Previous Copyright", "value" => (self.previous_notes.blank? ? 'n/a' : self.previous_notes.html_safe), "short" => false})
       attachment["fields"].push({"title" => "Current Copyright", "value" => (self.current_notes.blank? ? 'n/a' : self.current_notes.html_safe), "short" => false})
+    elsif(self.changed_item == 'link')
+      attachment["fields"].push({"title" => "Action", "value" => ":new: #{self.audit_action_string}", "short" => false})
+      attachment["fields"].push({"title" => "ImageAudit Image", "value" => self.auditable_url, "short" => false})
+      attachment["fields"].push({"title" => "Image Description", "value" => (ao.description.blank? ? 'n/a' : ao.description.html_safe), "short" => false})
+      attachment["fields"].push({"title" => "Copyright", "value" => (ao.copyright.blank? ? 'n/a' : ao.copyright.html_safe), "short" => false})
+    else
+      attachment["fields"].push({"title" => "Action", "value" => self.audit_action_string, "short" => false})
     end
     attachment["fields"].push({"title" => "Details", "value" => self.notification_url, "short" => false})
     post_options[:attachment] = attachment
