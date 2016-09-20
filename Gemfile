@@ -74,6 +74,8 @@ gem "breadcrumbs_on_rails"
 # html scrubbing
 gem "loofah"
 
+# Ruby 2.2 wtf
+gem 'test-unit'
 
 group :development do
   # require the powder gem
