@@ -90,7 +90,7 @@ class ImagesController < ApplicationController
     if(!params[:community_reviewed].nil?)
       previous_value = @image.community_reviewed
       if(params[:community_reviewed] == 'clear')
-        @image.update_attributes({community_reviewed: nil, community_reviewed: nil})
+        @image.update_attributes({community_reviewed: nil, community_reviewed_by: nil})
         AuditLog.create(contributor: @currentcontributor,
                         auditable: @image,
                         changed_item: 'community_reviewed',
