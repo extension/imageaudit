@@ -4,5 +4,7 @@ if(branch = ENV['BRANCH'])
 else
   set :branch, 'master'
 end
-set :vhost, 'dev-imageaudit.awsi.extension.org'
+set :vhost, 'dev-imageaudit.extension.org'
+set :deploy_server, 'dev-imageaudit.aws.extension.org'
+server deploy_server, :app, :web, :db, :primary => true
 server vhost, :app, :web, :db, :primary => true
