@@ -14,7 +14,6 @@ set :scm, "git"
 set :use_sudo, false
 set :keep_releases, 5
 ssh_options[:forward_agent] = true
-set :port, 22
 set :bundle_flags, '--deployment --binstubs'
 
 before "deploy", "deploy:checks:git_push"
