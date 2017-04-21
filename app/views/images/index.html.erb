@@ -36,50 +36,54 @@
     </tr>
   </thead>
   <tbody>
-    <%- @images.each do |image| -%>
-      <tr>
-        <td><%= image.id -%> (<%= link_to('details',image_path(image.id)) -%>)</td>
-        <td><%= imageaudit_link(image) -%></td>
-        <td>
-            <%- image.page_ids.each do |pid | -%>
-              <%= link_to("#{pid}",page_path(pid)) -%>,
+    <%= form_tag bulk_change_stock_and_staff_review_path(method: :post) do %>  
+      <%- @images.each do |image| -%>
+        <tr>
+          <td><%= image.id -%> (<%= link_to('details',image_path(image.id)) -%>)</td>
+          <td><%= imageaudit_link(image) -%></td>
+          <td>
+              <%- image.page_ids.each do |pid | -%>
+                <%= link_to("#{pid}",page_path(pid)) -%>,
+              <%- end -%>
+          </td>
+          <td><%= imageaudit_sourcelink(image) -%>
+            <%- if(image.source == 'create' and image.original_wiki?) -%>
+              <br/><em> originally copwiki </em>
             <%- end -%>
-        </td>
-        <td><%= imageaudit_sourcelink(image) -%>
-          <%- if(image.source == 'create' and image.original_wiki?) -%>
-            <br/><em> originally copwiki </em>
-          <%- end -%>
-        </td>
-        <td>
-          <%- if image.is_stock.nil? -%>
-            <span class="label label-info">not reviewed</span>
-          <%- elsif image.is_stock? -%>
-            <span class="label label-warning">Yes</span>
-          <%- else -%>
-            <span class="label label-success">No</span>
-          <%- end -%>
-        </td>
-        <td><%= image.copyright -%></td>
-        <td>
-            Community:
-            <%- if image.community_reviewed.nil? -%>
+          </td>
+          <td>
+            <%- if image.is_stock.nil? -%>
               <span class="label label-info">not reviewed</span>
-            <%- elsif image.community_reviewed? -%>
-              <span class="label label-success">Complete</span>
+            <%- elsif image.is_stock? -%>
+              <span class="label label-warning">Yes</span>
             <%- else -%>
-              <span class="label label-warning">Incomplete</span>
+              <span class="label label-success">No</span>
             <%- end -%>
-            <br/>
-            Staff:
-            <%- if image.staff_reviewed.nil? -%>
-              <span class="label label-info">not reviewed</span>
-            <%- elsif image.staff_reviewed? -%>
-              <span class="label label-success">Complete</span>
-            <%- else -%>
-              <span class="label label-warning">Incomplete</span>
-            <%- end -%>
-        </td>
-      </tr>
+          </td>
+          <td><%= image.copyright -%></td>
+          <td>
+              Community:
+              <%- if image.community_reviewed.nil? -%>
+                <span class="label label-info">not reviewed</span>
+              <%- elsif image.community_reviewed? -%>
+                <span class="label label-success">Complete</span>
+              <%- else -%>
+                <span class="label label-warning">Incomplete</span>
+              <%- end -%>
+              <br/>
+              Staff:
+              <%- if image.staff_reviewed.nil? -%>
+                <span class="label label-info">not reviewed</span>
+              <%- elsif image.staff_reviewed? -%>
+                <span class="label label-success">Complete</span>
+              <%- else -%>
+                <span class="label label-warning">Incomplete</span>
+              <%- end -%>
+              <%= check_box_tag 'selected_image_ids[]', image.id -%>
+          </td>
+        </tr>
+      <%- end -%>
+      <%= submit_tag %> 
     <%- end -%>
     </tbody>
   </table>

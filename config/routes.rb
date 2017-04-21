@@ -21,6 +21,8 @@ Imageaudit::Application.routes.draw do
     end
   end
 
+  match '/bulk_change_stock_and_staff_review', to: 'images#bulk_change_stock_and_staff_review'
+
   # authentication
   match '/logout', to:'auth#end', :as => 'logout'
   match '/auth/:provider/callback', to: 'auth#success'

@@ -173,4 +173,18 @@ class ImagesController < ApplicationController
     end
   end
 
+  def bulk_change_stock_and_staff_review
+    selected_images = params[:selected_image_ids]
+
+    selected_images.each do |image|
+      params[:id] = image
+      params[:is_stock] = 'no'
+      params[:staff_reviewed] = 'yes'
+      change_stock
+      change_staffreview
+    end
+
+    redirect_to images_path(staff_reviewed: "Unreviewed")
+  end
+
 end
