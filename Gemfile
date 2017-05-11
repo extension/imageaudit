@@ -84,7 +84,6 @@ group :development do
   gem 'httplog'
   gem 'capistrano', '~> 2.15.5'
   gem 'capatross', source: 'https://engineering.extension.org/rubygems'
-  gem 'exdata', source: 'https://engineering.extension.org/rubygems'
 
   # moar advanced stats in dev only
   #gem 'gsl', :git => 'git://github.com/30robots/rb-gsl.git'
