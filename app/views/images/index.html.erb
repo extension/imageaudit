@@ -39,7 +39,11 @@
     <%= form_tag bulk_change_stock_and_staff_review_path(method: :post) do %>  
       <%- @images.each do |image| -%>
         <tr>
-          <td><%= image.id -%> (<%= link_to('details',image_path(image.id)) -%>)</td>
+          <td><%= image.id -%> (<%= link_to('details',image_path(image.id)) -%>)
+              <% if request.fullpath == "/images?staff_reviewed=Unreviewed" -%>
+                <%= check_box_tag 'selected_image_ids[]', image.id -%>
+              <%- end -%>
+          </td>
           <td><%= imageaudit_link(image) -%></td>
           <td>
               <%- image.page_ids.each do |pid | -%>
@@ -79,11 +83,14 @@
               <%- else -%>
                 <span class="label label-warning">Incomplete</span>
               <%- end -%>
-              <%= check_box_tag 'selected_image_ids[]', image.id -%>
           </td>
         </tr>
       <%- end -%>
-      <%= submit_tag %> 
+      <% if request.fullpath == "/images?staff_reviewed=Unreviewed" -%>
+        <%= submit_tag "Update Selected Images" -%>
+        <p>Use this button to update the staff reviewed status to 'yes' and the is stock status to 'no' on the images checked below</p>
+        <input type="checkbox" id="selectAll" value="selectAll"> Select / Deselect All<br/><br/>
+      <%- end -%>
     <%- end -%>
     </tbody>
   </table>
@@ -97,4 +104,15 @@
   $('#showform').on('hide', function () {
     $('#formtoggler').html("Filter Options <i class='fa fa-caret-right'></i>");
   });
+  $('#selectAll').click(function() {
+   if (this.checked) {
+       $(':checkbox').each(function() {
+           this.checked = true;                        
+       });
+   } else {
+      $(':checkbox').each(function() {
+           this.checked = false;                        
+       });
+   } 
+});
   </script>
