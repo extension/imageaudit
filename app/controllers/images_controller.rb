@@ -177,8 +177,8 @@ class ImagesController < ApplicationController
     selected_images = params[:selected_image_ids]
 
     if !selected_images.nil?
-      selected_images.each do |image|
-        HostedImage.bulk_change_stock_and_staff_review(image, @currentcontributor.id)
+      selected_images.each do |image_id|
+        HostedImage.bulk_change_stock_and_staff_review(image_id, @currentcontributor.id)
       end
     end
 
