@@ -297,5 +297,30 @@ class HostedImage < ActiveRecord::Base
     self.joins(:pages => :tags).where("tags.name = 'bio'")
   end
 
+  def self.bulk_change_stock_and_staff_review(image_id, contributor)
+    @currentcontributor = Contributor.find(contributor)
 
+    if !image_id.nil?
+    @image = HostedImage.find(image_id)
+       #change stock review
+      previous_value = @image.is_stock
+      @image.update_attributes({is_stock: 0, is_stock_by: @currentcontributor.id,
+                                staff_reviewed: 1,
+                                staff_reviewed_by: @currentcontributor.id,
+                                notes: "*This image updated via HostedImage.bulk_change_stock_and_staff_review method"})
+      AuditLog.create(contributor: @currentcontributor,
+                      auditable: @image,
+                      changed_item: 'is_stock',
+                      previous_check_value: previous_value,
+                      current_check_value: @image.is_stock)
+      #change staff review
+      previous_value = @image.staff_reviewed
+      @image.update_attributes({staff_reviewed: 1, staff_reviewed_by: @currentcontributor.id})
+      AuditLog.create(contributor: @currentcontributor,
+                      auditable: @image,
+                      changed_item: 'staff_reviewed',
+                      previous_check_value: previous_value,
+                      current_check_value: @image.staff_reviewed?)
+    end
+  end
 end
