@@ -9,6 +9,7 @@ FALSE_VALUES = [false, 0, '0', 'f', 'F', 'false', 'FALSE','no','NO','n','N']
 
 set :application, "frontporch"
 set :user, 'pacecar'
+set :gateway, 'deploy.extension.org'
 set :repository, "git@github.com:extension/imageaudit.git"
 set :scm, "git"
 set :use_sudo, false
