@@ -70,7 +70,7 @@ class Contributor < ActiveRecord::Base
   def self.rebuild
     self.connection.execute("truncate table #{self.table_name};")
     insert_values = []
-    Person.where(:vouched => true).all.each do |p|
+    Person.all.each do |p|
       insert_list = []
       insert_list << p.id
       insert_list << ActiveRecord::Base.quote_value(p.idstring)
