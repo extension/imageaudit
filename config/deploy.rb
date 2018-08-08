@@ -20,6 +20,7 @@ set :bundle_flags, '--deployment --binstubs'
 before "deploy", "deploy:checks:git_push"
 if(TRUE_VALUES.include?(ENV['MIGRATE']))
   before "deploy", "deploy:web:disable"
+  before "deploy", "sidekiq:stop"
   after "deploy:update_code", "deploy:link_and_copy_configs"
   after "deploy:update_code", "deploy:cleanup"
   after "deploy:update_code", "deploy:migrate"
@@ -104,25 +105,12 @@ end
 namespace :sidekiq do
   desc 'Stop sidekiq'
   task 'stop', :roles => :app do
-    # check status
-    started = false
-    invoke_command 'status sidekiq' do |channel,stream,data|
-      started = (data =~ %r{start})
-    end
-    if(started)
-      invoke_command 'stop sidekiq', via: 'sudo'
-    end
+    invoke_command 'service sidekiq stop', via: 'sudo'
   end
 
   desc 'Start sidekiq'
   task 'start', :roles => :app do
-    stopped = false
-    invoke_command 'status sidekiq' do |channel,stream,data|
-      stopped = (data =~ %r{stop})
-    end
-    if(stopped)
-      invoke_command 'start sidekiq', via: 'sudo'
-    end
+    invoke_command 'service sidekiq start', via: 'sudo'
   end
 
   desc 'Restart sidekiq'
